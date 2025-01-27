@@ -11,6 +11,11 @@ void setLoader(WidgetRef ref, bool status) {
   ref.read(isLoadingProvider.notifier).update(status);
 }
 
+void setLocalLoader(bool _isLoader, bool status, Function setState) {
+  _isLoader = status;
+  setState(() {});
+}
+
 class AppConst {
   static String apiKey = 'AIzaSyByrnUCQsf4kpOYPRXniy7vs2G4F7lLZbo';
   static String stripePublishableKey = 'pk_test_AdjIGAzK2UFISynZ2Rsowlga';

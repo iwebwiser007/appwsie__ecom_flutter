@@ -2,11 +2,16 @@ import 'dart:async';
 
 import 'package:appwise_ecom/constants/image_constants.dart';
 import 'package:appwise_ecom/extensions/extension.dart';
+import 'package:appwise_ecom/models/home_screen_products_model.dart';
 import 'package:appwise_ecom/widgets/dashboard_listing_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../constants/app_constant.dart';
+import '../../services/base_url.dart';
+import '../../services/request.dart';
 import '../../utils/colors.dart';
+import '../../utils/common_utils.dart';
 import '../../utils/text_utility.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -19,6 +24,44 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final PageController _pageController = PageController();
   int currentIndex = 0;
+  List<Product> featuredProducts = [];
+  List<Product> bestsellerProducts = [];
+  List<Product> newArrivalsPorducts = [];
+  List<Product> hotDealsProducts = [];
+
+  void getDashboardData() async {
+    try {
+      // setLoader(ref, true);
+
+      ApiResponse response = await RequestUtils().getRequest(
+        url: ServiceUrl.getHomeProducts,
+      );
+
+      if (response.statusCode == 200) {
+        final HomeScreenProductsModel responseData = HomeScreenProductsModel.fromJson(
+          response.data['data'],
+        );
+
+        featuredProducts = responseData.featured!.products!;
+        hotDealsProducts = responseData.hotDeals!.products!;
+        bestsellerProducts = responseData.bestseller!.products!;
+        newArrivalsPorducts = responseData.newArrivals!.products!;
+
+        print(responseData.toJson());
+
+        // Utils.snackBar(response.data['message'], context);
+      } else {
+        // Utils.snackBar(response.error.toString(), context);
+      }
+
+      // setLoader(ref, false);
+    } catch (e) {
+      // setLoader(ref, false);
+      Utils.snackBar(e.toString(), context);
+
+      AppConst.showConsoleLog(e);
+    }
+  }
 
   final List<Map<String, String>> onboardingData = [
     {
@@ -39,6 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
+    getDashboardData();
     _startAutoScroll();
     super.initState();
   }
@@ -123,14 +167,28 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(
               height: 10,
             ),
-            const ProductListWidget(
-              headerTitle: 'Sale',
+            ProductListWidget(
+              headerTitle: 'Featured',
               headerSubtitle: 'Super summer sale',
+              productsList: featuredProducts,
             ),
-            const ProductListWidget(
-              headerTitle: 'New',
+            ProductListWidget(
+              headerTitle: 'Best Seller',
+              headerSubtitle: 'You’ve never seen it before!',
+              isNew: false,
+              productsList: bestsellerProducts,
+            ),
+            ProductListWidget(
+              headerTitle: 'New Arrivals',
               headerSubtitle: 'You’ve never seen it before!',
               isNew: true,
+              productsList: newArrivalsPorducts,
+            ),
+            ProductListWidget(
+              headerTitle: 'Hot Deals',
+              headerSubtitle: 'You’ve never seen it before!',
+              isNew: false,
+              productsList: hotDealsProducts,
             ),
           ],
         ),

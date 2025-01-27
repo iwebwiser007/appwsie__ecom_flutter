@@ -1,18 +1,23 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:appwise_ecom/utils/strings_methods.dart';
+import 'package:flutter/material.dart';
+
 import 'package:appwise_ecom/extensions/extension.dart';
+import 'package:appwise_ecom/models/home_screen_products_model.dart';
 import 'package:appwise_ecom/screens/dashboard/products/product_details_screen.dart';
 import 'package:appwise_ecom/utils/colors.dart';
 import 'package:appwise_ecom/utils/text_utility.dart';
-import 'package:flutter/material.dart';
 
 class ProductItemWidget extends StatelessWidget {
   final bool isNew;
+  final Product? product;
   final bool isFavoriteScreen;
   final Widget? trailing;
 
   const ProductItemWidget({
     super.key,
     required this.isNew,
+    this.product,
     this.isFavoriteScreen = false,
     this.trailing,
   });
@@ -21,7 +26,7 @@ class ProductItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        context.push(ProductDetailsScreen());
+        context.push(const ProductDetailsScreen());
       },
       child: Container(
         width: 200,
@@ -39,30 +44,32 @@ class ProductItemWidget extends StatelessWidget {
                     topLeft: Radius.circular(16),
                     topRight: Radius.circular(16),
                   ),
-                  child: Image.asset(
-                    'assets/images/product_img.png',
+                  child: Image.network(
+                    product!.productImage!,
+                    // 'assets/images/product_img.png',
                     height: 184,
                     width: double.infinity,
-                    fit: BoxFit.cover,
+                    fit: BoxFit.contain,
                   ),
                 ),
                 Positioned(
                   top: 8,
                   left: 15,
                   child: !isNew
-                      ? Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: Colors.blue,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const AppText(
-                            text: '-20%',
-                            textColor: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontsize: 12,
-                          ),
-                        )
+                      // ? Container(
+                      //     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      //     decoration: BoxDecoration(
+                      //       color: Colors.blue,
+                      //       borderRadius: BorderRadius.circular(12),
+                      //     ),
+                      //     child: const AppText(
+                      //       text: '-20%',
+                      //       textColor: Colors.white,
+                      //       fontWeight: FontWeight.bold,
+                      //       fontsize: 12,
+                      //     ),
+                      //   )
+                      ? const SizedBox()
                       : Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
@@ -144,31 +151,31 @@ class ProductItemWidget extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 4),
-                  const AppText(
-                    text: 'Dorothy Perkins',
+                  const SizedBox(height: 8),
+                  AppText(
+                    text: safeString(product?.description),
                     fontsize: 12,
                     textColor: Colors.grey,
                   ),
-                  const SizedBox(height: 4),
-                  const AppText(
-                    text: 'Blouse',
+                  const SizedBox(height: 8),
+                  AppText(
+                    text: safeString(product?.productName),
                     fontsize: 16,
                     fontWeight: FontWeight.bold,
                     textColor: Colors.black,
                   ),
-                  const SizedBox(height: 4),
-                  const Row(
+                  const SizedBox(height: 8),
+                  Row(
                     children: [
+                      // const AppText(
+                      //   text: '\$21',
+                      //   fontsize: 14,
+                      //   textColor: Colors.grey,
+                      //   textdecoration: TextDecoration.lineThrough,
+                      // ),
+                      // const SizedBox(width: 8),
                       AppText(
-                        text: '\$21',
-                        fontsize: 14,
-                        textColor: Colors.grey,
-                        textdecoration: TextDecoration.lineThrough,
-                      ),
-                      SizedBox(width: 8),
-                      AppText(
-                        text: '\$14',
+                        text: 'Rs.${safeString(product?.productPrice.toString())}',
                         fontsize: 14,
                         fontWeight: FontWeight.bold,
                         textColor: AppColor.primary,

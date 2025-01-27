@@ -1,53 +1,60 @@
 import 'package:appwise_ecom/customs/custom_button.dart';
 import 'package:appwise_ecom/customs/custom_field.dart';
+import 'package:appwise_ecom/extensions/extension.dart';
 import 'package:appwise_ecom/utils/text_utility.dart';
 import 'package:appwise_ecom/validation/basic_validation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ForgetPasswordScreen extends StatefulWidget {
+import '../../constants/app_constant.dart';
+import '../../routes/route_path.dart';
+import '../../services/base_url.dart';
+import '../../services/request.dart';
+import '../../utils/common_utils.dart';
+
+class ForgetPasswordScreen extends ConsumerStatefulWidget {
   const ForgetPasswordScreen({super.key});
 
   @override
-  State<ForgetPasswordScreen> createState() => _ForgetPasswordScreenState();
+  ConsumerState<ForgetPasswordScreen> createState() => _ForgetPasswordScreenState();
 }
 
-class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
+class _ForgetPasswordScreenState extends ConsumerState<ForgetPasswordScreen> {
   TextEditingController emailController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  // void forgetPassword() async {
-  //   try {
-  //     if (_formKey.currentState!.validate()) {
-  //       setLoader(ref, true);
-  //       final Map<String, dynamic> body = {
-  //         "name": nameController.text,
-  //         "mobile": contactController.text,
-  //         "email": emailController.text,
-  //         "password": passwordController.text,
-  //       };
+  void forgetPassword() async {
+    try {
+      if (_formKey.currentState!.validate()) {
+        setLoader(ref, true);
+        final Map<String, dynamic> body = {
+          "name": emailController.text,
+        };
 
-  //       ApiResponse response = await RequestUtils().postRequest(
-  //         url: ServiceUrl.singupUrl,
-  //         body: body,
-  //       );
+        ApiResponse response = await RequestUtils().postRequest(
+          url: ServiceUrl.forgetPasswordUrl,
+          body: body,
+        );
 
-  //       if (response.statusCode == 200 || response.statusCode == 201) {
-  //         context.pushReplacementNamed(RoutePath.loginScreen);
-  //       }
+        if (response.statusCode == 200) {
+          context.pushReplacementNamed(RoutePath.loginScreen);
+        }
 
-  //       Utils.snackBar(response.message!, context);
-  //       setLoader(ref, false);
-  //     }
-  //   } catch (e) {
-  //     print(e);
-  //     setLoader(ref, false);
-  //   }
-  // }
+        Utils.snackBar(response.message!, context);
+        setLoader(ref, false);
+      }
+    } catch (e) {
+      print(e);
+      setLoader(ref, false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
       body: Form(
+        key: _formKey,
         child: Padding(
           padding: const EdgeInsets.all(15.0),
           child: Column(
@@ -70,7 +77,9 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                   ),
                   CustomButton(
                     text: 'SEND',
-                    onPressed: () {},
+                    onPressed: () {
+                      forgetPassword();
+                    },
                   ),
                   const SizedBox(
                     height: 20,

@@ -1,6 +1,8 @@
 import 'package:appwise_ecom/customs/custom_button.dart';
 import 'package:appwise_ecom/customs/custom_field.dart';
 import 'package:appwise_ecom/extensions/extension.dart';
+import 'package:appwise_ecom/models/user_data_model.dart';
+import 'package:appwise_ecom/riverpod/user_data_riverpod.dart';
 import 'package:appwise_ecom/routes/route_path.dart';
 import 'package:appwise_ecom/utils/colors.dart';
 import 'package:appwise_ecom/utils/text_utility.dart';
@@ -46,7 +48,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         if (response.statusCode == 200) {
           Utils.snackBar(response.data['message'], context);
           final token = response.data['data']["token"];
+          final UserDataModel user = UserDataModel.fromJson(response.data['data']["user"]);
           AppConst.setAccessToken(token);
+
+          ref.read(userDataProvider.notifier).setUserData(user);
+
+          ref.read(userDataProvider.notifier);
 
           context.pushReplace(const DashboardScreen());
           await LocalStorage.saveToken(token: token, key: "access_token");

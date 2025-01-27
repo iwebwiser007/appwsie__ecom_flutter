@@ -1,4 +1,6 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:appwise_ecom/customs/custom_appbar.dart';
+import 'package:appwise_ecom/extensions/extension.dart';
 import 'package:appwise_ecom/utils/colors.dart';
 import 'package:appwise_ecom/utils/text_utility.dart';
 import 'package:appwise_ecom/widgets/product_item_tile_widget.dart';
@@ -7,7 +9,12 @@ import 'package:flutter/material.dart';
 import '../../../widgets/product_item_widget.dart';
 
 class ProductsListShopScreen extends StatefulWidget {
-  const ProductsListShopScreen({super.key});
+  final String title;
+
+  const ProductsListShopScreen({
+    super.key,
+    required this.title,
+  });
 
   @override
   State<ProductsListShopScreen> createState() => _ProductsListShopScreenState();
@@ -35,7 +42,7 @@ class _ProductsListShopScreenState extends State<ProductsListShopScreen> {
       //   ),
       // ),
       appBar: customAppBar(
-        title: 'Womens top',
+        title: widget.title.capitalizeFirstLetter(),
       ),
       body: Column(
         children: [

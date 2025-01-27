@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 
 import '../utils/text_utility.dart';
 
-class OrderItemWidget extends StatelessWidget {
+class CartItemWidget extends StatelessWidget {
   final Widget? trailing;
 
-  const OrderItemWidget({
+  const CartItemWidget({
     super.key,
     this.trailing,
   });

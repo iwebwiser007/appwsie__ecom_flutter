@@ -57,7 +57,9 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
               itemBuilder: (ctx, index) {
                 return ListTile(
                   onTap: () {
-                    context.push(const ProductsListShopScreen());
+                    context.push(const ProductsListShopScreen(
+                      title: 'title',
+                    ));
                   },
                   dense: true,
                   title: AppText(text: arr[index]),

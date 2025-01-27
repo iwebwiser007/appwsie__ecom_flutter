@@ -1,10 +1,18 @@
+import 'package:appwise_ecom/customs/custom_loader.dart';
 import 'package:appwise_ecom/extensions/extension.dart';
-import 'package:appwise_ecom/screens/dashboard/shop/sub_categories_screen.dart';
+import 'package:appwise_ecom/models/all_categories_list_model.dart';
+import 'package:appwise_ecom/screens/dashboard/shop/products_shop_screen.dart';
 import 'package:appwise_ecom/utils/colors.dart';
+import 'package:appwise_ecom/utils/strings_methods.dart';
 import 'package:appwise_ecom/utils/text_utility.dart';
 import 'package:appwise_ecom/widgets/catergories_list_tile.dart';
 import 'package:appwise_ecom/widgets/screen_title_widget.dart';
 import 'package:flutter/material.dart';
+
+import '../../../constants/app_constant.dart';
+import '../../../services/base_url.dart';
+import '../../../services/request.dart';
+import '../../../utils/common_utils.dart';
 
 class ShopScreen extends StatefulWidget {
   const ShopScreen({super.key});
@@ -15,9 +23,44 @@ class ShopScreen extends StatefulWidget {
 
 class _ShopScreenState extends State<ShopScreen> with SingleTickerProviderStateMixin {
   TabController? _tabController;
+  List<CategoriesItemModel> categories = [];
+  bool _isLoader = false;
+
+  void getAllCategories() async {
+    try {
+      _isLoader = true;
+      setState(() {});
+      ApiResponse response = await RequestUtils().getRequest(
+        url: ServiceUrl.getProductCategories,
+      );
+
+      if (response.statusCode == 200) {
+        final List<CategoriesItemModel> responseData = CategoriesItemModel.fromList(
+          List.from(response.data['data']),
+        );
+
+        categories = responseData;
+
+        // Utils.snackBar(response.data['message'], context);
+      } else {
+        // Utils.snackBar(response.error.toString(), context);
+      }
+
+      _isLoader = false;
+      setState(() {});
+    } catch (e) {
+      _isLoader = false;
+      setState(() {});
+
+      Utils.snackBar(e.toString(), context);
+
+      AppConst.showConsoleLog(e);
+    }
+  }
 
   @override
   void initState() {
+    getAllCategories();
     _tabController = TabController(length: 3, vsync: this);
     super.initState();
   }
@@ -85,15 +128,32 @@ class _ShopScreenState extends State<ShopScreen> with SingleTickerProviderStateM
                       ],
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      context.push(const SubCategoriesScreen());
-                    },
-                    child: const CatergoriesListTileWidget(title: 'New'),
-                  ),
-                  const CatergoriesListTileWidget(title: 'Clothes'),
-                  const CatergoriesListTileWidget(title: 'Shoes'),
-                  const CatergoriesListTileWidget(title: 'Accessories'),
+                  if (_isLoader && categories.isEmpty) ...[
+                    const Loader(),
+                  ] else ...[
+                    ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: categories.length,
+                      itemBuilder: (ctx, index) {
+                        return GestureDetector(
+                          onTap: () {
+                            context.push(
+                              ProductsListShopScreen(
+                                title: safeString(categories[index].categoryName),
+                              ),
+                            );
+                          },
+                          child: CatergoriesListTileWidget(
+                            title: safeString(
+                              categories[index].categoryName?.capitalizeFirstLetter(),
+                            ),
+                            image: categories[index].categoryImage?.capitalizeFirstLetter(),
+                          ),
+                        );
+                      },
+                    ),
+                  ]
                 ],
               ),
             ),

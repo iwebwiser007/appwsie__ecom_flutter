@@ -9,7 +9,7 @@ class ServiceUrl {
   static const refresTokenUrl = "$baseUrl/auth/create-access";
   static const refreshTokenUrl = "$baseUrl/auth/regenerate-token";
   static const postSignupCertificateUrl = "$baseUrl/certificate/v1/createUserCertificate";
-  static const forgetPasswordUrl = "$baseUrl/auth/v1/request-reset";
+  static const forgetPasswordUrl = "$baseUrl/api/users/forgot-password";
   static const confirmPasswordReset = "$baseUrl/auth/v1/resetPasswordCleaner";
   static const otpVerifyUrl = "$baseUrl/auth/v1/verify-otp";
 
@@ -17,8 +17,9 @@ class ServiceUrl {
   static const getUserDetailsUrl = "$baseUrl/user/v1/getUserDetails";
 
   //dashboard urls
-  static const userOnlineOfflineUrl = "$baseUrl/user/v1/userActivity";
-  static const getAllJobBookingUrl = "$baseUrl/booking/v1/bookingJobFilter";
+  static const getHomeProducts = "$baseUrl/AW0001/api/v1/getHomeProducts";
+  static const getProductCategories = "$baseUrl/AW0001/api/v1/getallcategory";
+  static const getAllCartItems = "$baseUrl/AW0001/api/v1/getitemcart";
   static const getDashboardData = "$baseUrl/booking/v1/cleanerInfo";
 
   //Job Booking urls
