@@ -122,7 +122,9 @@ class _BagScreenState extends State<BagScreen> {
             CustomButton(
               text: 'Checkout',
               onPressed: () {
-                context.push(const CheckoutScreen());
+                context.push(
+                  const CheckoutScreen(),
+                );
               },
             ),
             appSpaces.spaceForHeight10,

@@ -35,6 +35,9 @@ class ServiceUrl {
   static const getLicenseImages = "$baseUrl/certificate/v1/getUserCertificate";
   static const updateProfileUrl = "$baseUrl/user/v1/updateUserProfile";
 
+  //wishlist
+  static const getuserwishlist = "$baseUrl/AW0001/api/v1/getuserwishlist?user_id=1";
+
   //products
   static const getProductsByCategoryIdUrl = "$baseUrl/AW0001/api/v1/getProductsByCategory";
 }

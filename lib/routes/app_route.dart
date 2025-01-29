@@ -1,7 +1,7 @@
 import 'package:appwise_ecom/screens/auth/forget_password.dart';
 import 'package:appwise_ecom/screens/auth/signup_screen.dart';
 import 'package:appwise_ecom/screens/dashboard/cart/bag_screen.dart';
-import 'package:appwise_ecom/screens/dashboard/favourites_screen.dart';
+import 'package:appwise_ecom/screens/dashboard/wishlist/favourites_screen.dart';
 import 'package:appwise_ecom/screens/dashboard/profile/profile_screen.dart';
 import 'package:appwise_ecom/screens/dashboard/shop/shop_screen.dart';
 import 'package:appwise_ecom/screens/onboarding_screen.dart';

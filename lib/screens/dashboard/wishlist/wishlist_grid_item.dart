@@ -1,22 +1,22 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:appwise_ecom/models/product_item_model.dart';
-import 'package:appwise_ecom/utils/strings_methods.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
-
 import 'package:appwise_ecom/extensions/extension.dart';
 import 'package:appwise_ecom/models/home_screen_products_model.dart';
 import 'package:appwise_ecom/screens/dashboard/products/product_details_screen.dart';
 import 'package:appwise_ecom/utils/colors.dart';
+import 'package:appwise_ecom/utils/strings_methods.dart';
 import 'package:appwise_ecom/utils/text_utility.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
 
-class ProductItemWidget extends StatelessWidget {
+import '../../../models/user_wishlist_items.dart';
+
+class WishlistGridItem extends StatelessWidget {
   final bool isNew;
-  final ProductItemModel? product;
+  final UserWishlistItems? product;
   final bool isFavoriteScreen;
   final Widget? trailing;
 
-  const ProductItemWidget({
+  const WishlistGridItem({
     super.key,
     required this.isNew,
     this.product,
@@ -47,7 +47,7 @@ class ProductItemWidget extends StatelessWidget {
                     topRight: Radius.circular(16),
                   ),
                   child: CachedNetworkImage(
-                    imageUrl: safeString(product?.productImage),
+                    imageUrl: safeString(product?.productDetails?.imageUrl),
                     // 'assets/images/product_img.png',
                     height: 184,
                     width: double.infinity,
@@ -156,20 +156,20 @@ class ProductItemWidget extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   AppText(
-                    text: safeString(product?.description),
+                    text: safeString(product?.productDetails?.description),
                     fontsize: 12,
                     textColor: Colors.grey,
                   ),
                   const SizedBox(height: 8),
                   AppText(
-                    text: safeString(product?.productName),
+                    text: safeString(product?.productDetails?.productName),
                     fontsize: 16,
                     fontWeight: FontWeight.bold,
                     textColor: Colors.black,
                   ),
                   const SizedBox(height: 8),
                   AppText(
-                    text: showPrice(product?.productPrice.toString()),
+                    text: showPrice(product?.productDetails?.productPrice.toString()),
                     fontsize: 14,
                     fontWeight: FontWeight.bold,
                     textColor: AppColor.primary,

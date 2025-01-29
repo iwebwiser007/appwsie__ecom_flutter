@@ -1,10 +1,14 @@
+import 'package:appwise_ecom/models/user_wishlist_items.dart';
+import 'package:appwise_ecom/screens/dashboard/wishlist/wishlist_grid_item.dart';
+import 'package:appwise_ecom/screens/dashboard/wishlist/wishlist_list_item.dart';
 import 'package:appwise_ecom/utils/colors.dart';
 import 'package:appwise_ecom/utils/text_utility.dart';
-import 'package:appwise_ecom/widgets/product_item_tile_widget.dart';
 import 'package:flutter/material.dart';
 
-import '../../../widgets/product_item_widget.dart';
-import '../../widgets/screen_title_widget.dart';
+import '../../../constants/app_constant.dart';
+import '../../../services/base_url.dart';
+import '../../../services/request.dart';
+import '../../../widgets/screen_title_widget.dart';
 
 class FavouritesScreen extends StatefulWidget {
   const FavouritesScreen({super.key});
@@ -21,6 +25,30 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
     'Sleeveless',
     'Blouses',
   ];
+  List<UserWishlistItems> userWishlistItems = [];
+
+  void getWishListItems() async {
+    try {
+      ApiResponse response = await RequestUtils().getRequest(
+        url: ServiceUrl.getuserwishlist,
+      );
+
+      if (response.statusCode == 200) {
+        userWishlistItems = UserWishlistItems.fromList(
+          List.from(response.data['data']),
+        );
+        setState(() {});
+      }
+    } catch (e) {
+      AppConst.showConsoleLog(e);
+    }
+  }
+
+  @override
+  void initState() {
+    getWishListItems();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -161,11 +189,12 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
           if (isListView) ...[
             Expanded(
               child: ListView.builder(
-                itemCount: 10,
+                itemCount: userWishlistItems.length,
                 itemBuilder: (context, index) {
-                  return const ProductItemTileWidget(
+                  return WishlistListItem(
                     isFavoriteScreen: true,
-                    trailing: Icon(
+                    product: userWishlistItems[index],
+                    trailing: const Icon(
                       Icons.close,
                       color: Color(0xFF9B9B9B),
                       size: 20,
@@ -177,17 +206,18 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
           ] else ...[
             Expanded(
               child: GridView.builder(
-                itemCount: 10,
+                itemCount: userWishlistItems.length,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   mainAxisSpacing: 8,
-                  mainAxisExtent: 300,
+                  mainAxisExtent: 340,
                 ),
                 itemBuilder: (context, index) {
-                  return const ProductItemWidget(
+                  return WishlistGridItem(
                     isNew: false,
+                    product: userWishlistItems[index],
                     isFavoriteScreen: true,
-                    trailing: Icon(
+                    trailing: const Icon(
                       Icons.close,
                       size: 20,
                       color: Colors.grey,
