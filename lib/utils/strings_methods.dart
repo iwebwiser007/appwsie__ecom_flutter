@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 String getInitials(String name) {
   if (name.isEmpty) {
     return "MB";
@@ -23,6 +25,26 @@ String getInitials(String name) {
 
 String safeString(String? value, [String defaultValue = 'N/A']) {
   return (value == null || value.trim().isEmpty) ? defaultValue : value.trim();
+}
+
+String showPrice(String? value, [String defaultValue = 'N/A']) {
+  if (value == null || value.trim().isEmpty) {
+    return defaultValue;
+  }
+
+  try {
+    final number = double.parse(value.trim());
+    final formattedPrice = NumberFormat.currency(
+      locale: 'en_US',
+      symbol: 'R', // Currency symbol
+      decimalDigits: 0, // No decimal places
+    ).format(number);
+
+    return formattedPrice;
+  } catch (e) {
+    // Return defaultValue if parsing fails
+    return defaultValue;
+  }
 }
 
 String extractCityStateCountry(String? area) {

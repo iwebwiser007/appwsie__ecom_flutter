@@ -1,17 +1,23 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:appwise_ecom/utils/strings_methods.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import 'package:appwise_ecom/utils/colors.dart';
 import 'package:appwise_ecom/utils/text_utility.dart';
 
+import '../models/product_item_model.dart';
+
 class ProductItemTileWidget extends StatelessWidget {
   final bool isFavoriteScreen;
   final Widget? trailing;
+  final ProductItemModel? product;
 
   const ProductItemTileWidget({
     super.key,
     this.isFavoriteScreen = false,
     this.trailing,
+    this.product,
   });
 
   @override
@@ -42,8 +48,9 @@ class ProductItemTileWidget extends StatelessWidget {
                       topLeft: Radius.circular(20),
                       bottomLeft: Radius.circular(20),
                     ),
-                    child: Image.asset(
-                      'assets/images/product_img.png',
+                    child: CachedNetworkImage(
+                      imageUrl: safeString(product?.productImage),
+                      errorWidget: (context, url, error) => const Icon(Icons.error_outline),
                       fit: BoxFit.cover,
                       width: 130,
                       height: 120,
@@ -53,15 +60,19 @@ class ProductItemTileWidget extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const AppText(
-                        text: 'T-shirt',
+                      AppText(
+                        text: safeString(product?.productName),
                         fontWeight: FontWeight.bold,
                       ),
                       const SizedBox(height: 8),
-                      const AppText(
-                        text: 'LOST Ink',
-                        fontsize: 11,
-                        textColor: Colors.grey,
+                      SizedBox(
+                        width: 150,
+                        child: AppText(
+                          text: safeString(product?.description),
+                          fontsize: 11,
+                          textColor: Colors.grey,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       Row(
@@ -82,8 +93,8 @@ class ProductItemTileWidget extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 8),
-                      const AppText(
-                        text: '12\$',
+                      AppText(
+                        text: showPrice(product?.productPrice.toString()),
                         fontsize: 14,
                         fontWeight: FontWeight.bold,
                       ),

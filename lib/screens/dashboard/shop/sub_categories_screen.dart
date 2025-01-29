@@ -59,6 +59,7 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                   onTap: () {
                     context.push(const ProductsListShopScreen(
                       title: 'title',
+                      categoryId: 'id',
                     ));
                   },
                   dense: true,

@@ -1,14 +1,19 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:appwise_ecom/customs/custom_cached_image.dart';
+import 'package:appwise_ecom/models/user_cart_items.dart';
+import 'package:appwise_ecom/utils/strings_methods.dart';
 import 'package:flutter/material.dart';
 
 import '../utils/text_utility.dart';
 
 class CartItemWidget extends StatelessWidget {
   final Widget? trailing;
+  final CartItems cartItem;
 
   const CartItemWidget({
     super.key,
     this.trailing,
+    required this.cartItem,
   });
 
   @override
@@ -37,8 +42,8 @@ class CartItemWidget extends StatelessWidget {
                   topLeft: Radius.circular(20),
                   bottomLeft: Radius.circular(20),
                 ),
-                child: Image.asset(
-                  'assets/images/product_img.png',
+                child: CustomCachedImage(
+                  imageUrl: safeString(cartItem.productDetails?.productImage),
                   fit: BoxFit.cover,
                   width: 130,
                   height: 120,
@@ -48,8 +53,8 @@ class CartItemWidget extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const AppText(
-                    text: 'T-shirt',
+                  AppText(
+                    text: safeString(cartItem.productDetails?.productName),
                     fontWeight: FontWeight.bold,
                   ),
                   const SizedBox(height: 8),
@@ -101,7 +106,9 @@ class CartItemWidget extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 15),
-                      const AppText(text: '1'),
+                      AppText(
+                        text: safeString(cartItem.quantity.toString()),
+                      ),
                       const SizedBox(width: 15),
                       Container(
                         height: 36,
@@ -136,8 +143,8 @@ class CartItemWidget extends StatelessWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: trailing,
                 ),
-                const AppText(
-                  text: '12\$',
+                AppText(
+                  text: showPrice(cartItem.productDetails?.productPrice.toString()),
                   fontsize: 14,
                   fontWeight: FontWeight.bold,
                 ),

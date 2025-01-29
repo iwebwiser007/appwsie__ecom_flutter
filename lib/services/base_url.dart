@@ -1,5 +1,6 @@
 class ServiceUrl {
   // static const baseUrl = "https://6wx31c44-8002.inc1.devtunnels.ms";
+  // static const baseUrl = "http://213.210.21.175:5001"; //live
   static const baseUrl = "http://213.210.21.175:5001"; //live
 
 // -----Auth url----------------
@@ -18,7 +19,10 @@ class ServiceUrl {
 
   //dashboard urls
   static const getHomeProducts = "$baseUrl/AW0001/api/v1/getHomeProducts";
+  static const getDashboardBanners = "$baseUrl/AW0001/api/v1/getallbanner";
   static const getProductCategories = "$baseUrl/AW0001/api/v1/getallcategory";
+  static const getProductCategoriesBySectionUrl = "$baseUrl/AW0001/api/v1/getCategorybysection";
+  static const getAllSectionList = "$baseUrl/AW0001/api/v1/allsection";
   static const getAllCartItems = "$baseUrl/AW0001/api/v1/getitemcart";
   static const getDashboardData = "$baseUrl/booking/v1/cleanerInfo";
 
@@ -30,4 +34,7 @@ class ServiceUrl {
   //profile
   static const getLicenseImages = "$baseUrl/certificate/v1/getUserCertificate";
   static const updateProfileUrl = "$baseUrl/user/v1/updateUserProfile";
+
+  //products
+  static const getProductsByCategoryIdUrl = "$baseUrl/AW0001/api/v1/getProductsByCategory";
 }

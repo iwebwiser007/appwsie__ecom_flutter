@@ -1,19 +1,28 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:appwise_ecom/customs/custom_appbar.dart';
+import 'package:appwise_ecom/customs/custom_loader.dart';
 import 'package:appwise_ecom/extensions/extension.dart';
+import 'package:appwise_ecom/models/product_item_model.dart';
 import 'package:appwise_ecom/utils/colors.dart';
 import 'package:appwise_ecom/utils/text_utility.dart';
+import 'package:appwise_ecom/widgets/no_data_found_widget.dart';
 import 'package:appwise_ecom/widgets/product_item_tile_widget.dart';
 import 'package:flutter/material.dart';
 
+import '../../../constants/app_constant.dart';
+import '../../../services/base_url.dart';
+import '../../../services/request.dart';
+import '../../../utils/common_utils.dart';
 import '../../../widgets/product_item_widget.dart';
 
 class ProductsListShopScreen extends StatefulWidget {
   final String title;
+  final String categoryId;
 
   const ProductsListShopScreen({
     super.key,
     required this.title,
+    required this.categoryId,
   });
 
   @override
@@ -21,6 +30,42 @@ class ProductsListShopScreen extends StatefulWidget {
 }
 
 class _ProductsListShopScreenState extends State<ProductsListShopScreen> {
+  List<ProductItemModel> productsList = [];
+
+  @override
+  void initState() {
+    getProductsByCategory();
+
+    super.initState();
+  }
+
+  bool _isLoader = false;
+
+  void getProductsByCategory() async {
+    try {
+      _isLoader = true;
+      setState(() {});
+      ApiResponse response = await RequestUtils().getRequest(
+        url: "${ServiceUrl.getProductsByCategoryIdUrl}/${widget.categoryId}",
+      );
+
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        final responsData = ProductItemModel.fromList(List.from(response.data['data']));
+
+        productsList = responsData;
+      }
+      _isLoader = false;
+      setState(() {});
+    } catch (e) {
+      _isLoader = false;
+      setState(() {});
+
+      Utils.snackBar(e.toString(), context);
+
+      AppConst.showConsoleLog(e);
+    }
+  }
+
   bool isListView = true;
   final List<String> arr = [
     'T-shirts',
@@ -172,33 +217,41 @@ class _ProductsListShopScreenState extends State<ProductsListShopScreen> {
           const SizedBox(
             height: 20,
           ),
-          if (isListView) ...[
-            Expanded(
-              child: ListView.builder(
-                itemCount: 10,
-                itemBuilder: (context, index) {
-                  return const ProductItemTileWidget(
-                      // isNew: false,
-                      );
-                },
-              ),
-            ),
+          if (_isLoader) ...[
+            const Loader(),
+          ] else if (!_isLoader && productsList.isEmpty) ...[
+            const NoDataFoundWidget(),
           ] else ...[
-            Expanded(
-              child: GridView.builder(
-                itemCount: 10,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 8,
-                  mainAxisExtent: 300,
+            if (isListView) ...[
+              Expanded(
+                child: ListView.builder(
+                  itemCount: productsList.length,
+                  itemBuilder: (context, index) {
+                    return ProductItemTileWidget(
+                      // isNew: false,
+                      product: productsList[index],
+                    );
+                  },
                 ),
-                itemBuilder: (context, index) {
-                  return const ProductItemWidget(
-                    isNew: false,
-                  );
-                },
               ),
-            ),
+            ] else ...[
+              Expanded(
+                child: GridView.builder(
+                  itemCount: productsList.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 8,
+                    mainAxisExtent: 340,
+                  ),
+                  itemBuilder: (context, index) {
+                    return ProductItemWidget(
+                      isNew: false,
+                      product: productsList[index],
+                    );
+                  },
+                ),
+              ),
+            ],
           ],
         ],
       ),

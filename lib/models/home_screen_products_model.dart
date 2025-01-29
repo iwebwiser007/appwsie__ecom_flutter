@@ -32,7 +32,7 @@ class HomeScreenProductsModel {
 }
 
 class Featured {
-  List<Product>? products;
+  List<HomeScreenProduct>? products;
   int? total;
   int? totalPages;
   int? currentPage;
@@ -41,9 +41,9 @@ class Featured {
 
   Featured.fromJson(Map<String, dynamic> json) {
     if (json['products'] != null) {
-      products = <Product>[];
+      products = <HomeScreenProduct>[];
       json['products'].forEach((v) {
-        products!.add(Product.fromJson(v));
+        products!.add(HomeScreenProduct.fromJson(v));
       });
     }
     total = json['total'];
@@ -63,7 +63,7 @@ class Featured {
   }
 }
 
-class Product {
+class HomeScreenProduct {
   int? id;
   int? sectionId;
   int? categoryId;
@@ -109,7 +109,7 @@ class Product {
   String? updatedAt;
   String? deletedAt;
 
-  Product(
+  HomeScreenProduct(
       {this.id,
       this.sectionId,
       this.categoryId,
@@ -155,7 +155,7 @@ class Product {
       this.updatedAt,
       this.deletedAt});
 
-  Product.fromJson(Map<String, dynamic> json) {
+  HomeScreenProduct.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     sectionId = json['section_id'];
     categoryId = json['category_id'];

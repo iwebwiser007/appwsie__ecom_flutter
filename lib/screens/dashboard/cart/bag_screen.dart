@@ -1,9 +1,11 @@
 import 'package:appwise_ecom/customs/custom_button.dart';
+import 'package:appwise_ecom/customs/custom_loader.dart';
 import 'package:appwise_ecom/extensions/extension.dart';
 import 'package:appwise_ecom/models/user_cart_items.dart';
 import 'package:appwise_ecom/screens/dashboard/cart/checkout_screen.dart';
 import 'package:appwise_ecom/utils/app_spaces.dart';
 import 'package:appwise_ecom/utils/colors.dart';
+import 'package:appwise_ecom/utils/strings_methods.dart';
 import 'package:appwise_ecom/utils/text_utility.dart';
 import 'package:appwise_ecom/widgets/cart_item_widget.dart';
 import 'package:appwise_ecom/widgets/screen_title_widget.dart';
@@ -23,7 +25,7 @@ class BagScreen extends StatefulWidget {
 
 class _BagScreenState extends State<BagScreen> {
   bool _isLoader = false;
-  List<UserCartItems> cartItems = [];
+  UserCartModel? cartData;
 
   void getAllCategories() async {
     try {
@@ -34,11 +36,11 @@ class _BagScreenState extends State<BagScreen> {
       );
 
       if (response.statusCode == 200) {
-        final List<UserCartItems> responseData = UserCartItems.fromList(
-          List.from(response.data['data']),
+        final UserCartModel responseData = UserCartModel.fromJson(
+          response.data['data'],
         );
         print(responseData);
-        cartItems = responseData;
+        cartData = responseData;
 
         // Utils.snackBar(response.data['message'], context);
       } else {
@@ -82,35 +84,40 @@ class _BagScreenState extends State<BagScreen> {
             const SizedBox(
               height: 20,
             ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: cartItems.length,
-                itemBuilder: (context, index) {
-                  return const CartItemWidget(
-                    trailing: Icon(
-                      Icons.more_vert,
-                      color: Color(0xFF9B9B9B),
-                      size: 20,
-                    ),
-                  );
-                },
+            if (_isLoader) ...[
+              const Loader()
+            ] else ...[
+              Expanded(
+                child: ListView.builder(
+                  itemCount: cartData?.cartItems?.length,
+                  itemBuilder: (context, index) {
+                    return CartItemWidget(
+                      cartItem: cartData!.cartItems![index],
+                      trailing: const Icon(
+                        Icons.more_vert,
+                        color: Color(0xFF9B9B9B),
+                        size: 20,
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-            appSpaces.spaceForHeight30,
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                AppText(
-                  text: 'Total Amount:',
-                  textColor: AppColor.greyTextColor,
-                ),
-                AppText(
-                  text: '\$124',
-                  fontWeight: FontWeight.bold,
-                  fontsize: 18,
-                ),
-              ],
-            ),
+              appSpaces.spaceForHeight30,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const AppText(
+                    text: 'Total Amount:',
+                    textColor: AppColor.greyTextColor,
+                  ),
+                  AppText(
+                    text: showPrice(cartData?.totalCartPrice.toString()),
+                    fontWeight: FontWeight.bold,
+                    fontsize: 18,
+                  ),
+                ],
+              ),
+            ],
             appSpaces.spaceForHeight20,
             CustomButton(
               text: 'Checkout',

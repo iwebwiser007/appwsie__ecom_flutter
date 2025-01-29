@@ -12,7 +12,7 @@ class ProductListWidget extends StatelessWidget {
   final String headerSubtitle;
   final bool isNew;
   final bool showHeader;
-  final List<Product> productsList;
+  final List<HomeScreenProduct> productsList;
 
   const ProductListWidget({
     super.key,
@@ -66,7 +66,7 @@ class ProductListWidget extends StatelessWidget {
             ),
           ),
         SizedBox(
-          height: 320,
+          height: 330,
           child: ListView.builder(
             itemCount: productsList.length,
             shrinkWrap: true,
@@ -212,7 +212,7 @@ class ProductListWidget extends StatelessWidget {
               //     ],
               //   ),
               // );
-              return ProductItemWidget(
+              return ProductItemWidgetForHome(
                 isNew: isNew,
                 product: productsList[index],
               );
