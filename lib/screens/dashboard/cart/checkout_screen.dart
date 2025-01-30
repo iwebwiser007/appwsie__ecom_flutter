@@ -7,10 +7,16 @@ import 'package:appwise_ecom/utils/colors.dart';
 import 'package:appwise_ecom/utils/text_utility.dart';
 import 'package:appwise_ecom/widgets/address_tile_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CheckoutScreen extends StatelessWidget {
+class CheckoutScreen extends ConsumerStatefulWidget {
   const CheckoutScreen({super.key});
 
+  @override
+  ConsumerState<CheckoutScreen> createState() => _CheckoutScreenState();
+}
+
+class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,7 +35,9 @@ class CheckoutScreen extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                 ),
                 appSpaces.spaceForHeight10,
-                const AddressTileWidget(),
+                const AddressTileWidget(
+                    // adress: ,
+                    ),
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(

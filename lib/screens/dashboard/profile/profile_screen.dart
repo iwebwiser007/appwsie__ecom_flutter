@@ -1,11 +1,13 @@
 import 'package:appwise_ecom/extensions/extension.dart';
+import 'package:appwise_ecom/riverpod/user_data_riverpod.dart';
 import 'package:appwise_ecom/routes/route_path.dart';
+import 'package:appwise_ecom/screens/dashboard/cart/shipping_addresses_screen.dart';
+import 'package:appwise_ecom/utils/strings_methods.dart';
 import 'package:appwise_ecom/widgets/screen_title_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../constants/app_constant.dart';
-import '../../../riverpod/bottom_bar_index_provider.dart';
 import '../../../utils/app_spaces.dart';
 import '../../../utils/local_storage.dart';
 import '../../../utils/text_utility.dart';
@@ -21,41 +23,44 @@ class AppProfileScreen extends ConsumerStatefulWidget {
 }
 
 class _AppProfileScreenState extends ConsumerState<AppProfileScreen> {
+  final List<Map<String, dynamic>> items = [
+    {
+      "title": "My orders",
+      "subtitle": "Already have 12 orders",
+      "key": "order",
+    },
+    {
+      "title": "Shipping addresses",
+      "subtitle": "3 ddresses",
+      "key": "address",
+    },
+    // {
+    //   "title": "Payment methods",
+    //   "subtitle": "Visa  **34",
+    // },
+    // {
+    //   "title": "Promocodes",
+    //   "subtitle": "You have special promocodes",
+    // },
+    {
+      "title": "My reviews",
+      "subtitle": "Reviews for 4 items",
+    },
+    {
+      "title": "Settings",
+      "subtitle": "Notifications, password",
+      "key": "settings",
+    },
+    {
+      "title": "Logout",
+      "subtitle": "",
+      "key": "logout",
+    },
+  ];
+
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> items = [
-      {
-        "title": "My orders",
-        "subtitle": "Already have 12 orders",
-        "key": "order",
-      },
-      {
-        "title": "Shipping addresses",
-        "subtitle": "3 ddresses",
-      },
-      {
-        "title": "Payment methods",
-        "subtitle": "Visa  **34",
-      },
-      {
-        "title": "Promocodes",
-        "subtitle": "You have special promocodes",
-      },
-      {
-        "title": "My reviews",
-        "subtitle": "Reviews for 4 items",
-      },
-      {
-        "title": "Settings",
-        "subtitle": "Notifications, password",
-        "key": "settings",
-      },
-      {
-        "title": "Logout",
-        "subtitle": "",
-        "key": "logout",
-      },
-    ];
+    final userData = ref.read(userDataProvider);
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -70,19 +75,27 @@ class _AppProfileScreenState extends ConsumerState<AppProfileScreen> {
               children: [
                 const ScreenTitleWidget(title: "My profile"),
                 appSpaces.spaceForHeight15,
-                const ListTile(
+                ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: CircleAvatar(
                     radius: 30,
+                    child: AppText(
+                      text: getInitials(
+                        safeString(userData?.name).capitalizeFirstLetter(),
+                      ),
+                      textColor: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontsize: 22,
+                    ),
                   ),
                   title: AppText(
-                    text: "Matilda Brown",
+                    text: safeString(userData?.name).capitalizeFirstLetter(),
                     fontsize: 16,
                   ),
                   subtitle: AppText(
-                    text: "matildabrown@mail.com",
+                    text: safeString(userData?.email),
                     fontsize: 12,
-                    textColor: Color(0xff9B9B9B),
+                    textColor: const Color(0xff9B9B9B),
                   ),
                 ),
                 appSpaces.spaceForHeight20,
@@ -100,6 +113,15 @@ class _AppProfileScreenState extends ConsumerState<AppProfileScreen> {
                             ),
                           );
                         }
+                        if (item['key'] == 'address') {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const AddressListScreen(),
+                            ),
+                          );
+                        }
+
                         if (item['key'] == 'settings') {
                           Navigator.push(
                             context,
@@ -110,13 +132,10 @@ class _AppProfileScreenState extends ConsumerState<AppProfileScreen> {
                         }
 
                         if (item['key'] == 'logout') {
-                          AppConst.setAccessToken(null);
-
+                          // ref.read(bottomBarIndexProvider.notifier).update(0);
                           context.pushNamedAndRemoveUntil(RoutePath.loginScreen);
-                          setLoader(ref, false);
-
-                          ref.read(bottomBarIndexProvider.notifier).update(0);
                           await LocalStorage.removeToken("access_token");
+                          AppConst.setAccessToken(null);
                         }
                       },
                     );

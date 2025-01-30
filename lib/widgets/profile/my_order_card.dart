@@ -1,3 +1,5 @@
+import 'package:appwise_ecom/models/orders_list_model.dart';
+import 'package:appwise_ecom/utils/strings_methods.dart';
 import 'package:flutter/material.dart';
 
 import '../../../utils/text_utility.dart';
@@ -5,7 +7,7 @@ import '../../screens/dashboard/profile/my_order_detail_screen.dart';
 import '../../utils/app_spaces.dart';
 import 'order_status_button.dart';
 
-Widget myOrderCard(BuildContext context) {
+Widget myOrderCard(BuildContext context, OrdersListItemModel orderItem) {
   return Container(
     width: double.infinity,
     margin: const EdgeInsets.only(bottom: 20),
@@ -16,28 +18,28 @@ Widget myOrderCard(BuildContext context) {
         padding: const EdgeInsets.all(15.0),
         child: Column(
           children: [
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 AppText(
-                  text: "Order №1947034",
+                  text: "Order ${safeString(orderItem.orderNumber.toString())}",
                   fontsize: 16,
                 ),
                 AppText(
-                  text: "05-12-2019",
+                  text: safeString(orderItem.date),
                   fontsize: 12,
-                  textColor: Color(0xff9B9B9B),
+                  textColor: const Color(0xff9B9B9B),
                 ),
               ],
             ),
             appSpaces.spaceForHeight15,
-            showItemInRow(title: "Tracking number: ", subtitle: "IW3475453455"),
+            showItemInRow(title: "Tracking number: ", subtitle: safeString(orderItem.trackingNumber)),
             appSpaces.spaceForHeight5,
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                showItemInRow(title: "Quantity: ", subtitle: "3"),
-                showItemInRow(title: "Total Amount: ", subtitle: "112\$"),
+                showItemInRow(title: "Quantity: ", subtitle: safeString(orderItem.quantity.toString())),
+                showItemInRow(title: "Total Amount: ", subtitle: showPrice(orderItem.totalAmount.toString())),
               ],
             ),
             appSpaces.spaceForHeight15,
@@ -49,11 +51,11 @@ Widget myOrderCard(BuildContext context) {
                   useInCard: true,
                   isActive: false,
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => MyOrderDetailScreen()));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const MyOrderDetailScreen()));
                   },
                 ),
-                const AppText(
-                  text: 'Delivered',
+                AppText(
+                  text: safeString(orderItem.status),
                   textColor: Colors.green,
                   fontsize: 14,
                 )

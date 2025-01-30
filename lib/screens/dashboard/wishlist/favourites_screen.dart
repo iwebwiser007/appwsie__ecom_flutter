@@ -1,24 +1,28 @@
 import 'package:appwise_ecom/models/user_wishlist_items.dart';
+import 'package:appwise_ecom/riverpod/user_data_riverpod.dart';
 import 'package:appwise_ecom/screens/dashboard/wishlist/wishlist_grid_item.dart';
 import 'package:appwise_ecom/screens/dashboard/wishlist/wishlist_list_item.dart';
 import 'package:appwise_ecom/utils/colors.dart';
 import 'package:appwise_ecom/utils/text_utility.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../constants/app_constant.dart';
 import '../../../services/base_url.dart';
 import '../../../services/request.dart';
 import '../../../widgets/screen_title_widget.dart';
 
-class FavouritesScreen extends StatefulWidget {
+class FavouritesScreen extends ConsumerStatefulWidget {
   const FavouritesScreen({super.key});
 
   @override
-  State<FavouritesScreen> createState() => _FavouritesScreenState();
+  ConsumerState<FavouritesScreen> createState() => _FavouritesScreenState();
 }
 
-class _FavouritesScreenState extends State<FavouritesScreen> {
+class _FavouritesScreenState extends ConsumerState<FavouritesScreen> {
   bool isListView = true;
+  bool isLoading = true;
+
   final List<String> arr = [
     'T-shirts',
     'Crop tops',
@@ -28,18 +32,26 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
   List<UserWishlistItems> userWishlistItems = [];
 
   void getWishListItems() async {
+    final userId = ref.read(userDataProvider)?.id;
+
     try {
+      isLoading = true;
+      setState(() {});
+
       ApiResponse response = await RequestUtils().getRequest(
-        url: ServiceUrl.getuserwishlist,
+        url: "${ServiceUrl.getuserwishlist}?user_id=$userId",
       );
 
       if (response.statusCode == 200) {
         userWishlistItems = UserWishlistItems.fromList(
           List.from(response.data['data']),
         );
-        setState(() {});
       }
+      isLoading = false;
+      setState(() {});
     } catch (e) {
+      isLoading = false;
+      setState(() {});
       AppConst.showConsoleLog(e);
     }
   }
@@ -151,7 +163,9 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                         ),
                         child: const Row(
                           children: [
-                            Icon(Icons.import_export),
+                            Icon(
+                              Icons.import_export,
+                            ),
                             AppText(
                               text: 'Price: High to low',
                               textAlign: TextAlign.center,

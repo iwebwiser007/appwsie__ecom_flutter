@@ -1,21 +1,22 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:flutter/material.dart';
+
 import 'package:appwise_ecom/extensions/extension.dart';
 import 'package:appwise_ecom/screens/dashboard/cart/edit_address_screen.dart';
 import 'package:appwise_ecom/screens/dashboard/cart/shipping_addresses_screen.dart';
-import 'package:flutter/material.dart';
 
+import '../models/address_list_item_model.dart';
 import '../utils/app_spaces.dart';
 import '../utils/colors.dart';
 import '../utils/text_utility.dart';
 
 class AddressTileWidget extends StatefulWidget {
-  final String? name;
-  final String? adress;
+  final AddressListItemModel? adress;
+
   final bool isEdit;
 
   const AddressTileWidget({
     super.key,
-    this.name,
     this.adress,
     this.isEdit = false,
   });
@@ -25,12 +26,21 @@ class AddressTileWidget extends StatefulWidget {
 }
 
 class _AddressTileWidgetState extends State<AddressTileWidget> {
-  final bool rememberMe = false;
+  int? selectedAddressId;
+
+  toggleRememberMe() {
+    print(widget.adress?.id);
+    setState(() {
+      selectedAddressId = widget.adress?.id;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 115,
+      // height: 115,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      margin: const EdgeInsets.symmetric(vertical: 12),
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: Colors.white,
@@ -43,22 +53,26 @@ class _AddressTileWidgetState extends State<AddressTileWidget> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const AppText(
-                    text: 'Jane Doe',
-                    fontWeight: FontWeight.w600,
-                    fontsize: 14,
-                  ),
-                  appSpaces.spaceForHeight10,
-                  const AppText(
-                    fontsize: 14,
-                    height: 1.3,
-                    text: '3 Newbridge Court Chino Hills,\nCA 91709, United States',
-                  ),
-                ],
+              SizedBox(
+                width: context.screenWidth * 0.65,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppText(
+                      text: widget.adress?.name?.capitalizeFirstLetter() ?? 'Jane Doe',
+                      fontWeight: FontWeight.w600,
+                      fontsize: 14,
+                    ),
+                    appSpaces.spaceForHeight10,
+                    AppText(
+                      fontsize: 14,
+                      height: 1.3,
+                      text: widget.adress?.address ?? '3 Newbridge Court Chino Hills,\nCA 91709, United States',
+                      softwrap: true,
+                    ),
+                  ],
+                ),
               ),
               GestureDetector(
                 onTap: () {
@@ -78,7 +92,7 @@ class _AddressTileWidgetState extends State<AddressTileWidget> {
           appSpaces.spaceForHeight5,
           if (widget.isEdit)
             GestureDetector(
-              // onTap: toggleRememberMe,
+              onTap: toggleRememberMe,
               child: Row(
                 children: [
                   SizedBox(
@@ -90,14 +104,14 @@ class _AddressTileWidgetState extends State<AddressTileWidget> {
                       ),
                       checkColor: Colors.white,
                       activeColor: Colors.black,
-                      fillColor: rememberMe
+                      fillColor: selectedAddressId == widget.adress?.id
                           ? null
                           : const WidgetStatePropertyAll(
                               Colors.white,
                             ),
-                      value: rememberMe,
+                      value: selectedAddressId == widget.adress?.id,
                       onChanged: (bool? newValue) {
-                        // toggleRememberMe();
+                        toggleRememberMe();
                       },
                     ),
                   ),

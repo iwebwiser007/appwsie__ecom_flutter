@@ -36,8 +36,14 @@ class ServiceUrl {
   static const updateProfileUrl = "$baseUrl/user/v1/updateUserProfile";
 
   //wishlist
-  static const getuserwishlist = "$baseUrl/AW0001/api/v1/getuserwishlist?user_id=1";
+  static const getuserwishlist = "$baseUrl/AW0001/api/v1/getuserwishlist";
+
+  //orders
+  static const getOrderListUrl = "$baseUrl/AW0001/api/v1/getallorderforuser";
 
   //products
   static const getProductsByCategoryIdUrl = "$baseUrl/AW0001/api/v1/getProductsByCategory";
+
+  //address
+  static const getShippingAddressesList = "$baseUrl/AW0001/api/v1/getDeliveryAddress";
 }
