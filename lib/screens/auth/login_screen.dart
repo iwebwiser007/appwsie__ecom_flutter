@@ -15,6 +15,7 @@ import '../../services/base_url.dart';
 import '../../services/request.dart';
 import '../../utils/common_utils.dart';
 import '../../utils/local_storage.dart';
+import '../../widgets/screen_title_widget.dart';
 import '../dashboard/dashboard_screen.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -84,11 +85,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              const AppText(
-                text: 'Login',
-                fontsize: 34,
-                fontWeight: FontWeight.bold,
-              ),
+              const ScreenTitleWidget(title: 'Login'),
               const SizedBox(
                 height: 30,
               ),

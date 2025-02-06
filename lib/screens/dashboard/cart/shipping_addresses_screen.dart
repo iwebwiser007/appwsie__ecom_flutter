@@ -2,7 +2,7 @@ import 'package:appwise_ecom/customs/custom_appbar.dart';
 import 'package:appwise_ecom/extensions/extension.dart';
 import 'package:appwise_ecom/models/address_list_item_model.dart';
 import 'package:appwise_ecom/riverpod/user_data_riverpod.dart';
-import 'package:appwise_ecom/screens/dashboard/cart/edit_address_screen.dart';
+import 'package:appwise_ecom/screens/dashboard/cart/add_address_screen.dart';
 import 'package:appwise_ecom/widgets/address_tile_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -58,18 +58,24 @@ class _AddressListScreenState extends ConsumerState<AddressListScreen> {
       appBar: customAppBar(title: 'Shipping Adresses'),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: addressList.map((e) {
-            return AddressTileWidget(
-              isEdit: true,
-              adress: e,
-            );
-          }).toList(),
+        child: SingleChildScrollView(
+          child: Column(
+            children: addressList.map((e) {
+              return AddressTileWidget(
+                isEdit: true,
+                adress: e,
+              );
+            }).toList(),
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          context.push(const EditAddressScreen());
+          context.push(
+            AddAddressScreen(
+              getShippingAddressesList,
+            ),
+          );
         },
         backgroundColor: Colors.black,
         shape: RoundedRectangleBorder(

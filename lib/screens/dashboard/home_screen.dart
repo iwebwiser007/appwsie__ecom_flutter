@@ -165,7 +165,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           decoration: BoxDecoration(
                             image: DecorationImage(
                               image: imageProvider,
-                              // fit: BoxFit.cover,
+                              fit: BoxFit.cover,
                               colorFilter: const ColorFilter.mode(
                                 Color.fromARGB(255, 215, 214, 214),
                                 BlendMode.darken,
@@ -181,7 +181,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           padding: const EdgeInsets.all(20.0),
                           child: AppText(
                             text: safeString(data.title?.capitalizeFirstLetter()),
-                            textColor: Colors.black,
+                            textColor: Colors.white,
                             fontsize: 35,
                             fontWeight: FontWeight.w900,
                             height: 1.2,

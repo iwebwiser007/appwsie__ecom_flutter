@@ -1,18 +1,17 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:flutter/material.dart';
-
 import 'package:appwise_ecom/extensions/extension.dart';
-import 'package:appwise_ecom/screens/dashboard/cart/edit_address_screen.dart';
+import 'package:appwise_ecom/riverpod/shipping_address_provider.dart';
 import 'package:appwise_ecom/screens/dashboard/cart/shipping_addresses_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/address_list_item_model.dart';
 import '../utils/app_spaces.dart';
 import '../utils/colors.dart';
 import '../utils/text_utility.dart';
 
-class AddressTileWidget extends StatefulWidget {
+class AddressTileWidget extends ConsumerStatefulWidget {
   final AddressListItemModel? adress;
-
   final bool isEdit;
 
   const AddressTileWidget({
@@ -22,21 +21,21 @@ class AddressTileWidget extends StatefulWidget {
   });
 
   @override
-  State<AddressTileWidget> createState() => _AddressTileWidgetState();
+  ConsumerState<AddressTileWidget> createState() => _AddressTileWidgetState();
 }
 
-class _AddressTileWidgetState extends State<AddressTileWidget> {
-  int? selectedAddressId;
-
+class _AddressTileWidgetState extends ConsumerState<AddressTileWidget> {
   toggleRememberMe() {
     print(widget.adress?.id);
     setState(() {
-      selectedAddressId = widget.adress?.id;
+      ref.read(shippingAddressProvider.notifier).update(widget.adress!);
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final selectedAddress = ref.watch(shippingAddressProvider);
+
     return Container(
       // height: 115,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -74,19 +73,22 @@ class _AddressTileWidgetState extends State<AddressTileWidget> {
                   ],
                 ),
               ),
-              GestureDetector(
-                onTap: () {
-                  if (widget.isEdit) {
-                    context.push(const EditAddressScreen());
-                  } else {
+              if (!widget.isEdit)
+                GestureDetector(
+                  onTap: () {
+                    // if (widget.isEdit) {
+                    //   context.push(
+                    //     AddAddressScreen(() {}),
+                    //   );
+                    // } else {
                     context.push(const AddressListScreen());
-                  }
-                },
-                child: AppText(
-                  text: widget.isEdit ? "Edit" : 'Change',
-                  textColor: AppColor.primary,
+                    // }
+                  },
+                  child: const AppText(
+                    text: 'Change',
+                    textColor: AppColor.primary,
+                  ),
                 ),
-              ),
             ],
           ),
           appSpaces.spaceForHeight5,
@@ -104,12 +106,12 @@ class _AddressTileWidgetState extends State<AddressTileWidget> {
                       ),
                       checkColor: Colors.white,
                       activeColor: Colors.black,
-                      fillColor: selectedAddressId == widget.adress?.id
+                      fillColor: selectedAddress?.id == widget.adress?.id
                           ? null
                           : const WidgetStatePropertyAll(
                               Colors.white,
                             ),
-                      value: selectedAddressId == widget.adress?.id,
+                      value: selectedAddress?.id == widget.adress?.id,
                       onChanged: (bool? newValue) {
                         toggleRememberMe();
                       },

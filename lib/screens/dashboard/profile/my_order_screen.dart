@@ -1,6 +1,7 @@
 import 'package:appwise_ecom/customs/custom_loader.dart';
 import 'package:appwise_ecom/extensions/extension.dart';
 import 'package:appwise_ecom/models/orders_list_model.dart';
+import 'package:appwise_ecom/widgets/no_data_found_widget.dart';
 import 'package:appwise_ecom/widgets/screen_title_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -96,6 +97,8 @@ class _MyOrderScreenState extends ConsumerState<MyOrderScreen> {
             if (_isLoader) ...[
               appSpaces.spaceForHeight20,
               const Loader(),
+            ] else if (orderList.isEmpty && !_isLoader) ...[
+              const NoDataFoundWidget(),
             ] else ...[
               Expanded(
                 child: SingleChildScrollView(

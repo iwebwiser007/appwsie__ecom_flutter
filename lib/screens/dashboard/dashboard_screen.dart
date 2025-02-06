@@ -1,11 +1,19 @@
+import 'package:appwise_ecom/extensions/extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../constants/app_constant.dart';
+import '../../models/user_data_model.dart';
 import '../../riverpod/bottom_bar_index_provider.dart';
+import '../../riverpod/user_data_riverpod.dart';
 import '../../routes/app_route.dart';
+import '../../services/base_url.dart';
+import '../../services/request.dart';
 import '../../utils/colors.dart';
+import '../../utils/common_utils.dart';
+import '../../utils/local_storage.dart';
+import '../auth/login_screen.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
@@ -15,10 +23,44 @@ class DashboardScreen extends ConsumerStatefulWidget {
 }
 
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
+  void getUserDetails() async {
+    try {
+      ApiResponse response = await RequestUtils().getRequest(
+        url: ServiceUrl.getUserDetailsUrl,
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${AppConst.getAccessToken()}',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final UserDataModel userData = UserDataModel.fromJson(response.data['data']);
+        print(response.data['data']);
+        ref.read(userDataProvider.notifier).setUserData(userData);
+      }
+
+      if (response.statusCode == 400) {
+        Utils.snackBar('Session Expired...Please login again!', context);
+
+        AppConst.setAccessToken(null);
+        AppConst.setRefreshToken(null);
+
+        ref.read(userDataProvider.notifier).clearUserData();
+        ref.read(bottomBarIndexProvider.notifier).update(0);
+
+        await LocalStorage.removeToken("access_token");
+        context.pushReplace(const LoginScreen());
+      }
+    } catch (e) {
+      AppConst.showConsoleLog('e====$e');
+    }
+  }
+
   @override
   void initState() {
+    getUserDetails();
     AppConst.setOuterContext(context);
-
     super.initState();
   }
 

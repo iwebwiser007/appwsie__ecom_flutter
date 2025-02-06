@@ -1,15 +1,17 @@
+import 'package:appwise_ecom/customs/custom_loader.dart';
 import 'package:appwise_ecom/models/user_wishlist_items.dart';
 import 'package:appwise_ecom/riverpod/user_data_riverpod.dart';
 import 'package:appwise_ecom/screens/dashboard/wishlist/wishlist_grid_item.dart';
 import 'package:appwise_ecom/screens/dashboard/wishlist/wishlist_list_item.dart';
 import 'package:appwise_ecom/utils/colors.dart';
-import 'package:appwise_ecom/utils/text_utility.dart';
+import 'package:appwise_ecom/widgets/no_data_found_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../constants/app_constant.dart';
 import '../../../services/base_url.dart';
 import '../../../services/request.dart';
+import '../../../utils/common_utils.dart';
 import '../../../widgets/screen_title_widget.dart';
 
 class FavouritesScreen extends ConsumerStatefulWidget {
@@ -56,6 +58,31 @@ class _FavouritesScreenState extends ConsumerState<FavouritesScreen> {
     }
   }
 
+  void removeItemWishlist(String id, int index) async {
+    try {
+      final userId = ref.read(userDataProvider)?.id;
+
+      ApiResponse response = await RequestUtils().postRequest(
+        url: ServiceUrl.removeItemWishlist,
+        body: {
+          "user_id": userId,
+          "product_id": id.toString(),
+        },
+        method: 'DELETE',
+      );
+
+      if (response.statusCode == 200) {
+        userWishlistItems.removeAt(index);
+        setState(() {});
+        Utils.snackBar(response.message!, context);
+      }
+
+      print(response);
+    } catch (e) {
+      AppConst.showConsoleLog(e);
+    }
+  }
+
   @override
   void initState() {
     getWishListItems();
@@ -91,6 +118,7 @@ class _FavouritesScreenState extends ConsumerState<FavouritesScreen> {
               ],
             ),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 SizedBox(
                   height: 45,
@@ -122,124 +150,140 @@ class _FavouritesScreenState extends ConsumerState<FavouritesScreen> {
                 const SizedBox(
                   height: 10,
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: AppColor.greyBgColor,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: const Row(
-                        children: [
-                          Icon(Icons.filter_list),
-                          AppText(
-                            text: 'Filter',
-                            textAlign: TextAlign.center,
-                            fontsize: 14,
-                          ),
-                        ],
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        showBottomSheet(
-                          context: context,
-                          builder: (ctx) {
-                            return const Text('data');
-                          },
-                        );
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: AppColor.greyBgColor,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: const Row(
-                          children: [
-                            Icon(
-                              Icons.import_export,
-                            ),
-                            AppText(
-                              text: 'Price: High to low',
-                              textAlign: TextAlign.center,
-                              fontsize: 14,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    if (isListView) ...[
-                      GestureDetector(
-                        onTap: () {
-                          isListView = !isListView;
-                          setState(() {});
-                        },
-                        child: const Icon(Icons.view_list),
-                      ),
-                    ] else ...[
-                      GestureDetector(
-                        onTap: () {
-                          isListView = !isListView;
-                          setState(() {});
-                        },
-                        child: const Icon(Icons.view_module),
-                      ),
-                    ]
-                  ],
-                ),
+                if (isListView) ...[
+                  GestureDetector(
+                    onTap: () {
+                      isListView = !isListView;
+                      setState(() {});
+                    },
+                    child: const Icon(Icons.view_list),
+                  ),
+                ] else ...[
+                  GestureDetector(
+                    onTap: () {
+                      isListView = !isListView;
+                      setState(() {});
+                    },
+                    child: const Icon(Icons.view_module),
+                  ),
+                ]
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                //   children: [
+                //     // Container(
+                //     //   margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                //     //   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                //     //   alignment: Alignment.center,
+                //     //   decoration: BoxDecoration(
+                //     //     color: AppColor.greyBgColor,
+                //     //     borderRadius: BorderRadius.circular(20),
+                //     //   ),
+                //     //   child: const Row(
+                //     //     children: [
+                //     //       Icon(Icons.filter_list),
+                //     //       AppText(
+                //     //         text: 'Filter',
+                //     //         textAlign: TextAlign.center,
+                //     //         fontsize: 14,
+                //     //       ),
+                //     //     ],
+                //     //   ),
+                //     // ),
+                //     // GestureDetector(
+                //     //   onTap: () {},
+                //     //   child: Container(
+                //     //     margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                //     //     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                //     //     alignment: Alignment.center,
+                //     //     decoration: BoxDecoration(
+                //     //       color: AppColor.greyBgColor,
+                //     //       borderRadius: BorderRadius.circular(20),
+                //     //     ),
+                //     //     child: const Row(
+                //     //       children: [
+                //     //         Icon(
+                //     //           Icons.import_export,
+                //     //         ),
+                //     //         AppText(
+                //     //           text: 'Price: High to low',
+                //     //           textAlign: TextAlign.center,
+                //     //           fontsize: 14,
+                //     //         ),
+                //     //       ],
+                //     //     ),
+                //     //   ),
+                //     // ),
+
+                //   ],
+                // ),
               ],
             ),
           ),
           const SizedBox(
             height: 20,
           ),
-          if (isListView) ...[
-            Expanded(
-              child: ListView.builder(
-                itemCount: userWishlistItems.length,
-                itemBuilder: (context, index) {
-                  return WishlistListItem(
-                    isFavoriteScreen: true,
-                    product: userWishlistItems[index],
-                    trailing: const Icon(
-                      Icons.close,
-                      color: Color(0xFF9B9B9B),
-                      size: 20,
-                    ),
-                  );
-                },
-              ),
-            ),
+          if (isLoading) ...[
+            const Loader(),
+          ] else if (!isLoading && userWishlistItems.isEmpty) ...[
+            const NoDataFoundWidget(),
           ] else ...[
-            Expanded(
-              child: GridView.builder(
-                itemCount: userWishlistItems.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 8,
-                  mainAxisExtent: 340,
+            if (isListView) ...[
+              Expanded(
+                child: ListView.builder(
+                  itemCount: userWishlistItems.length,
+                  itemBuilder: (context, index) {
+                    return WishlistListItem(
+                      isFavoriteScreen: true,
+                      product: userWishlistItems[index],
+                      trailing: GestureDetector(
+                        onTap: () {
+                          removeItemWishlist(
+                            userWishlistItems[index].productDetails!.id.toString(),
+                            index,
+                          );
+                        },
+                        child: const Icon(
+                          Icons.close,
+                          color: Color(0xFF9B9B9B),
+                          size: 20,
+                        ),
+                      ),
+                    );
+                  },
                 ),
-                itemBuilder: (context, index) {
-                  return WishlistGridItem(
-                    isNew: false,
-                    product: userWishlistItems[index],
-                    isFavoriteScreen: true,
-                    trailing: const Icon(
-                      Icons.close,
-                      size: 20,
-                      color: Colors.grey,
-                    ),
-                  );
-                },
               ),
-            ),
+            ] else ...[
+              Expanded(
+                child: GridView.builder(
+                  itemCount: userWishlistItems.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 8,
+                    mainAxisExtent: 340,
+                  ),
+                  itemBuilder: (context, index) {
+                    return WishlistGridItem(
+                      isNew: false,
+                      product: userWishlistItems[index],
+                      isFavoriteScreen: true,
+                      trailing: GestureDetector(
+                        onTap: () {
+                          removeItemWishlist(
+                            userWishlistItems[index].id.toString(),
+                            index,
+                          );
+                        },
+                        child: const Icon(
+                          Icons.h_mobiledata,
+                          size: 20,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
           ],
         ],
       ),

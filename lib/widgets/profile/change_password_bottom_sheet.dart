@@ -18,3 +18,19 @@ void changePasswordBottomSheet(BuildContext context) {
     },
   );
 }
+
+void renderBottomSheet(BuildContext context, Widget content) {
+  showModalBottomSheet(
+    sheetAnimationStyle: AnimationStyle(
+      curve: Curves.easeInOutCubic,
+      reverseCurve: Curves.easeInOutCubic,
+    ),
+    context: context,
+    isScrollControlled: false,
+    showDragHandle: true,
+    backgroundColor: AppColor.appBgColor,
+    builder: (context) {
+      return content;
+    },
+  );
+}

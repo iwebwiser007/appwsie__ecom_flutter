@@ -28,7 +28,12 @@ class WishlistGridItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        context.push(const ProductDetailsScreen());
+        context.push(
+          ProductDetailsScreen(
+            productId: product?.productDetails?.id.toString(),
+            productName: product?.productDetails?.productName,
+          ),
+        );
       },
       child: Container(
         width: 200,
@@ -202,7 +207,12 @@ class ProductItemWidgetForHome extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        context.push(const ProductDetailsScreen());
+        context.push(
+          ProductDetailsScreen(
+            productId: product?.id.toString(),
+            productName: product?.productName,
+          ),
+        );
       },
       child: Container(
         width: 200,

@@ -151,6 +151,17 @@ class RequestUtils {
               },
           body: jsonEncode(body),
         );
+      } else if (method == 'DELETE') {
+        return http.delete(
+          Uri.parse(url),
+          headers: headers ??
+              {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ${AppConst.getAccessToken()}',
+              },
+          body: jsonEncode(body),
+        );
       } else {
         return http.post(
           Uri.parse(url),

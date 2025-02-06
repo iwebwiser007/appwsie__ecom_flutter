@@ -3,11 +3,12 @@ import 'package:appwise_ecom/customs/custom_appbar.dart';
 import 'package:appwise_ecom/customs/custom_loader.dart';
 import 'package:appwise_ecom/extensions/extension.dart';
 import 'package:appwise_ecom/models/product_item_model.dart';
+import 'package:appwise_ecom/riverpod/user_data_riverpod.dart';
 import 'package:appwise_ecom/utils/colors.dart';
-import 'package:appwise_ecom/utils/text_utility.dart';
 import 'package:appwise_ecom/widgets/no_data_found_widget.dart';
 import 'package:appwise_ecom/widgets/product_item_tile_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../constants/app_constant.dart';
 import '../../../services/base_url.dart';
@@ -15,7 +16,7 @@ import '../../../services/request.dart';
 import '../../../utils/common_utils.dart';
 import '../../../widgets/product_item_widget.dart';
 
-class ProductsListShopScreen extends StatefulWidget {
+class ProductsListShopScreen extends ConsumerStatefulWidget {
   final String title;
   final String categoryId;
 
@@ -26,10 +27,10 @@ class ProductsListShopScreen extends StatefulWidget {
   });
 
   @override
-  State<ProductsListShopScreen> createState() => _ProductsListShopScreenState();
+  ConsumerState<ProductsListShopScreen> createState() => _ProductsListShopScreenState();
 }
 
-class _ProductsListShopScreenState extends State<ProductsListShopScreen> {
+class _ProductsListShopScreenState extends ConsumerState<ProductsListShopScreen> {
   List<ProductItemModel> productsList = [];
 
   @override
@@ -43,10 +44,11 @@ class _ProductsListShopScreenState extends State<ProductsListShopScreen> {
 
   void getProductsByCategory() async {
     try {
+      final userId = ref.read(userDataProvider)?.id;
       _isLoader = true;
       setState(() {});
       ApiResponse response = await RequestUtils().getRequest(
-        url: "${ServiceUrl.getProductsByCategoryIdUrl}/${widget.categoryId}",
+        url: "${ServiceUrl.getProductsByCategoryIdUrl}?category_id=${widget.categoryId}&user_id=$userId",
       );
 
       if (response.statusCode == 201 || response.statusCode == 200) {
@@ -142,56 +144,56 @@ class _ProductsListShopScreenState extends State<ProductsListShopScreen> {
                   height: 10,
                 ),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: AppColor.greyBgColor,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: const Row(
-                        children: [
-                          Icon(Icons.filter_list),
-                          AppText(
-                            text: 'Filter',
-                            textAlign: TextAlign.center,
-                            fontsize: 14,
-                          ),
-                        ],
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        showBottomSheet(
-                          context: context,
-                          builder: (ctx) {
-                            return const Text('data');
-                          },
-                        );
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: AppColor.greyBgColor,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: const Row(
-                          children: [
-                            Icon(Icons.import_export),
-                            AppText(
-                              text: 'Price: High to low',
-                              textAlign: TextAlign.center,
-                              fontsize: 14,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                    // Container(
+                    //   margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    //   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                    //   alignment: Alignment.center,
+                    //   decoration: BoxDecoration(
+                    //     color: AppColor.greyBgColor,
+                    //     borderRadius: BorderRadius.circular(20),
+                    //   ),
+                    //   child: const Row(
+                    //     children: [
+                    //       Icon(Icons.filter_list),
+                    //       AppText(
+                    //         text: 'Filter',
+                    //         textAlign: TextAlign.center,
+                    //         fontsize: 14,
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
+                    // GestureDetector(
+                    //   onTap: () {
+                    //     showBottomSheet(
+                    //       context: context,
+                    //       builder: (ctx) {
+                    //         return const Text('data');
+                    //       },
+                    //     );
+                    //   },
+                    //   child: Container(
+                    //     margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    //     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                    //     alignment: Alignment.center,
+                    //     decoration: BoxDecoration(
+                    //       color: AppColor.greyBgColor,
+                    //       borderRadius: BorderRadius.circular(20),
+                    //     ),
+                    //     child: const Row(
+                    //       children: [
+                    //         Icon(Icons.import_export),
+                    //         AppText(
+                    //           text: 'Price: High to low',
+                    //           textAlign: TextAlign.center,
+                    //           fontsize: 14,
+                    //         ),
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
                     if (isListView) ...[
                       GestureDetector(
                         onTap: () {

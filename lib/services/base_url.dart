@@ -15,7 +15,7 @@ class ServiceUrl {
   static const otpVerifyUrl = "$baseUrl/auth/v1/verify-otp";
 
   static const getAllServicesUrl = "$baseUrl/area/v1/getAllSeriveArea";
-  static const getUserDetailsUrl = "$baseUrl/user/v1/getUserDetails";
+  static const getUserDetailsUrl = "$baseUrl/AW0001/api/v1/users/:id";
 
   //dashboard urls
   static const getHomeProducts = "$baseUrl/AW0001/api/v1/getHomeProducts";
@@ -37,13 +37,23 @@ class ServiceUrl {
 
   //wishlist
   static const getuserwishlist = "$baseUrl/AW0001/api/v1/getuserwishlist";
+  static const addItemToWishlist = "$baseUrl/AW0001/api/v1/addwishlist";
+  static const removeItemWishlist = "$baseUrl/AW0001/api/v1/deleteuserwishlist";
 
   //orders
   static const getOrderListUrl = "$baseUrl/AW0001/api/v1/getallorderforuser";
 
   //products
   static const getProductsByCategoryIdUrl = "$baseUrl/AW0001/api/v1/getProductsByCategory";
+  static const getProductsDetailsByIdUrl = "$baseUrl/AW0001/api/v1/getproductbyid";
 
   //address
   static const getShippingAddressesList = "$baseUrl/AW0001/api/v1/getDeliveryAddress";
+  static const calculateShippingChargesUrl = "$baseUrl/AW0001/api/v1/calculateRate";
+  static const addAddressUrl = "$baseUrl/AW0001/api/v1/addDeliveryAddress";
+
+  //cart
+  static const cartItemsUpdateUrl = "$baseUrl/AW0001/api/v1/cartUpdate";
+  static const addToCartUrl = "$baseUrl/AW0001/api/v1/additemtocart";
+  static const removeItemFromCart = "$baseUrl/AW0001/api/v1/removeitemfromcart";
 }
