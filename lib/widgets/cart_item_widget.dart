@@ -17,11 +17,17 @@ import '../utils/text_utility.dart';
 class CartItemWidget extends ConsumerStatefulWidget {
   final Widget? trailing;
   final CartItems cartItem;
+  final List<CartItems> cartItems;
+  final Function? updatetotalCartAmount;
+  final int? currentIndex;
 
   const CartItemWidget({
     super.key,
     this.trailing,
     required this.cartItem,
+    required this.cartItems,
+    this.updatetotalCartAmount,
+    this.currentIndex,
   });
 
   @override
@@ -39,8 +45,9 @@ class _CartItemWidgetState extends ConsumerState<CartItemWidget> {
 
   void updateItemCount(
     String productId,
-    String quant,
+    String updatedQuantity,
     String size,
+    bool isIncreasing,
   ) async {
     try {
       final userId = ref.read(userDataProvider)?.id;
@@ -51,15 +58,60 @@ class _CartItemWidgetState extends ConsumerState<CartItemWidget> {
           "user_id": userId,
           "product_id": productId,
           "size": size,
-          "quantity": quant,
+          "quantity": updatedQuantity,
         },
         method: 'PUT',
       );
 
       if (response.statusCode == 200) {
-        quantity = int.parse(quant);
+        quantity = int.parse(updatedQuantity);
+
+        if (isIncreasing) {
+          widget.updatetotalCartAmount?.call(
+            widget.cartItem.productDetails?.unitPrice,
+            isIncreasing,
+          );
+        } else {
+          widget.updatetotalCartAmount?.call(
+            widget.cartItem.productDetails?.unitPrice,
+            isIncreasing,
+          );
+        }
         setState(() {});
       } else {
+        Utils.snackBar(response.message!, context);
+      }
+
+      print(response);
+    } catch (e) {
+      AppConst.showConsoleLog(e);
+    }
+  }
+
+  void removeItemFromCart(
+    String id,
+    String size,
+  ) async {
+    try {
+      final userId = ref.read(userDataProvider)?.id;
+
+      ApiResponse response = await RequestUtils().postRequest(
+        url: ServiceUrl.removeItemFromCart,
+        body: {
+          "user_id": userId,
+          "product_id": id.toString(),
+          "size": size,
+        },
+        method: 'DELETE',
+      );
+
+      if (response.statusCode == 200) {
+        widget.cartItems.removeAt(widget.currentIndex!);
+        widget.updatetotalCartAmount?.call(
+          widget.cartItem.productDetails?.unitPrice * quantity,
+          false,
+        );
+        setState(() {});
         Utils.snackBar(response.message!, context);
       }
 
@@ -158,6 +210,7 @@ class _CartItemWidgetState extends ConsumerState<CartItemWidget> {
                               widget.cartItem.productDetails!.id.toString(),
                               updatedQuantity.toString(),
                               widget.cartItem.size.toString(),
+                              false,
                             );
                           },
                           child: Container(
@@ -190,12 +243,11 @@ class _CartItemWidgetState extends ConsumerState<CartItemWidget> {
                             int updatedQuantity = quantity;
                             updatedQuantity++;
 
-                            print(updatedQuantity);
-
                             updateItemCount(
                               widget.cartItem.productDetails!.id.toString(),
                               updatedQuantity.toString(),
                               widget.cartItem.size.toString(),
+                              true,
                             );
                           },
                           child: Container(
@@ -228,16 +280,24 @@ class _CartItemWidgetState extends ConsumerState<CartItemWidget> {
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: widget.trailing,
+                  GestureDetector(
+                    onTap: () {
+                      removeItemFromCart(
+                        widget.cartItems[widget.currentIndex!].productDetails!.id.toString(),
+                        widget.cartItems[widget.currentIndex!].size!,
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: widget.trailing,
+                    ),
                   ),
                   const SizedBox(
                     height: 40,
                   ),
                   AppText(
                     text: showPrice(
-                      widget.cartItem.productDetails?.totalPrice.toString(),
+                      "${widget.cartItem.productDetails?.unitPrice * quantity}",
                     ),
                     fontsize: 14,
                     fontWeight: FontWeight.bold,

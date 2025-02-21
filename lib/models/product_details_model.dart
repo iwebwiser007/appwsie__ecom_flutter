@@ -335,9 +335,22 @@ class Ratings {
   String? createdAt;
   String? updatedAt;
   String? deletedAt;
+  String? name;
   List<dynamic>? images;
 
-  Ratings({this.id, this.userId, this.productId, this.review, this.rating, this.status, this.createdAt, this.updatedAt, this.deletedAt, this.images});
+  Ratings({
+    this.id,
+    this.userId,
+    this.productId,
+    this.review,
+    this.rating,
+    this.status,
+    this.createdAt,
+    this.updatedAt,
+    this.deletedAt,
+    this.name,
+    this.images,
+  });
 
   Ratings.fromJson(Map<String, dynamic> json) {
     if (json["id"] is int) {
@@ -367,6 +380,9 @@ class Ratings {
     if (json["deleted_at"] is String) {
       deletedAt = json["deleted_at"];
     }
+    if (json["name"] is String) {
+      name = json["name"];
+    }
     if (json["images"] is List) {
       images = json["images"] ?? [];
     }
@@ -387,6 +403,7 @@ class Ratings {
     _data["created_at"] = createdAt;
     _data["updated_at"] = updatedAt;
     _data["deleted_at"] = deletedAt;
+    _data["name"] = name;
     if (images != null) {
       _data["images"] = images;
     }

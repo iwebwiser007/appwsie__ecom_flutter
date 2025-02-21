@@ -36,29 +36,29 @@ class RequestUtils {
       );
       AppConst.log("$apiUrl--response", json.decode(response.body));
       AppConst.log("statusCode", response.statusCode);
-      if (response.statusCode == 400) {
-        // AppConst.getOuterContext()?.pushReplace(LoginScreen());
-        // Utils.snackBar('Session expired. Please log in again.', AppConst.getOuterContext()!);
-        // final tokenRefreshed = await refreshToken();
-        // if (tokenRefreshed) {
-        //   return _handleRequest<T>(
-        //     requestFunction: requestFunction,
-        //     timeoutDurationSeconds: timeoutDurationSeconds,
-        //     apiUrl: apiUrl,
-        //   );
-        // } else {
-        return ApiResponse<T>(
-          statusCode: 400,
-          error: 'Session expired. Please log in again.',
-          message: json.decode(response.body)['message'],
-        );
-        // }
-        // await showSessionExpiredDialog();
-        // AppConst.setAccessToken(null);
-        // AppConst.setRefreshToken(null);
-        // UserHiveMethods.clear();
-        // AppConst.getOuterContext()?.pushNamedAndRemoveUntil(RoutePath.loginScreen);
-      }
+      // if (response.statusCode == 400) {
+      // AppConst.getOuterContext()?.pushReplace(LoginScreen());
+      // Utils.snackBar('Session expired. Please log in again.', AppConst.getOuterContext()!);
+      // final tokenRefreshed = await refreshToken();
+      // if (tokenRefreshed) {
+      //   return _handleRequest<T>(
+      //     requestFunction: requestFunction,
+      //     timeoutDurationSeconds: timeoutDurationSeconds,
+      //     apiUrl: apiUrl,
+      //   );
+      // } else {
+      // return ApiResponse<T>(
+      //   statusCode: 400,
+      //   error: 'Session expired. Please log in again.',
+      //   message: json.decode(response.body)['message'],
+      // );
+      // }
+      // await showSessionExpiredDialog();
+      // AppConst.setAccessToken(null);
+      // AppConst.setRefreshToken(null);
+      // UserHiveMethods.clear();
+      // AppConst.getOuterContext()?.pushNamedAndRemoveUntil(RoutePath.loginScreen);
+      // }
       if (response.statusCode >= 200 && response.statusCode < 300) {
         return ApiResponse<T>(
           statusCode: response.statusCode,
@@ -196,6 +196,7 @@ class RequestUtils {
     AppConst.log("url", url);
     AppConst.log("imageMap", imageMap);
     AppConst.log("fields", jsonEncode(fields));
+
     Future<http.Response> requestFunction() async {
       final multipartRequest = http.MultipartRequest('POST', Uri.parse(url));
       multipartRequest.headers.addAll({
@@ -211,12 +212,17 @@ class RequestUtils {
         }
       });
       for (var entry in imageMap.entries) {
+        print(entry.key);
+        print(entry.value);
         if (entry.value != null) {
           if ((entry.value.startsWith("http://") || entry.value.startsWith("https://"))) {
             final imageMultipartFile = http.MultipartFile.fromString(entry.key, entry.value);
             multipartRequest.files.add(imageMultipartFile);
           } else {
-            final imageMultipartFile = await http.MultipartFile.fromPath(entry.key, entry.value);
+            final imageMultipartFile = await http.MultipartFile.fromPath(
+              entry.key,
+              entry.value,
+            );
             multipartRequest.files.add(imageMultipartFile);
           }
         }

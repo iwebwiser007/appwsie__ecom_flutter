@@ -11,11 +11,12 @@ class ServiceUrl {
   static const refreshTokenUrl = "$baseUrl/auth/regenerate-token";
   static const postSignupCertificateUrl = "$baseUrl/certificate/v1/createUserCertificate";
   static const forgetPasswordUrl = "$baseUrl/api/users/forgot-password";
-  static const confirmPasswordReset = "$baseUrl/auth/v1/resetPasswordCleaner";
+
+  static const changePasswordUrl = "$baseUrl/AW0001/api/v1/update-password";
   static const otpVerifyUrl = "$baseUrl/auth/v1/verify-otp";
 
   static const getAllServicesUrl = "$baseUrl/area/v1/getAllSeriveArea";
-  static const getUserDetailsUrl = "$baseUrl/AW0001/api/v1/users/:id";
+  static const getUserDetailsUrl = "$baseUrl/AW0001/api/v1/userById";
 
   //dashboard urls
   static const getHomeProducts = "$baseUrl/AW0001/api/v1/getHomeProducts";
@@ -28,7 +29,7 @@ class ServiceUrl {
 
   //Job Booking urls
   static const acceptBookingUrl = "$baseUrl/booking/v1/acceptedBooking";
-  static const uploadChecklistImagesUrl = "$baseUrl/bookingImage/v1/createBookingImage";
+  static const addRatingUrl = "$baseUrl/AW0001/api/v1/addrating";
   static const paymentIntentUrl = "$baseUrl//payment/create-payment-intent";
 
   //profile
@@ -42,10 +43,13 @@ class ServiceUrl {
 
   //orders
   static const getOrderListUrl = "$baseUrl/AW0001/api/v1/getallorderforuser";
+  static const getOrderDetailsUrl = "$baseUrl/AW0001/api/v1/getorderbyid";
+  static const returnOrderUrl = "$baseUrl/AW0001/api/v1/submit-return";
 
   //products
   static const getProductsByCategoryIdUrl = "$baseUrl/AW0001/api/v1/getProductsByCategory";
   static const getProductsDetailsByIdUrl = "$baseUrl/AW0001/api/v1/getproductbyid";
+  static const getProductFiltersByCategoryId = "$baseUrl/AW0001/api/v1/filtersbycategory";
 
   //address
   static const getShippingAddressesList = "$baseUrl/AW0001/api/v1/getDeliveryAddress";
@@ -56,4 +60,7 @@ class ServiceUrl {
   static const cartItemsUpdateUrl = "$baseUrl/AW0001/api/v1/cartUpdate";
   static const addToCartUrl = "$baseUrl/AW0001/api/v1/additemtocart";
   static const removeItemFromCart = "$baseUrl/AW0001/api/v1/removeitemfromcart";
+  static const addOrderUrl = "$baseUrl/AW0001/api/v1/addorder";
+  static const addTransactionDetails = "$baseUrl/AW0001/api/v1/tansactionsDetails";
+  static const createShippingOrderUrl = "$baseUrl/AW0001/api/v1/createshippingorder";
 }

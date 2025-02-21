@@ -32,20 +32,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
             children: [
               const ScreenTitleWidget(title: "Settings"),
               appSpaces.spaceForHeight25,
-              const AppText(
-                text: "Personal Information",
-                fontsize: 16,
-              ),
-              appSpaces.spaceForHeight20,
-              customField(
-                controller: TextEditingController(),
-                hintText: "Full name",
-              ),
-              appSpaces.spaceForHeight20,
-              customField(
-                controller: TextEditingController(),
-                hintText: "Date of Birth",
-              ),
+              // const AppText(
+              //   text: "Personal Information",
+              //   fontsize: 16,
+              // ),
+              // appSpaces.spaceForHeight20,
+              // customField(
+              //   controller: TextEditingController(),
+              //   hintText: "Full name",
+              // ),
+              // appSpaces.spaceForHeight20,
+              // customField(
+              //   controller: TextEditingController(),
+              //   hintText: "Date of Birth",
+              // ),
               appSpaces.spaceForHeight25,
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

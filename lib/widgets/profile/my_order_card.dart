@@ -1,4 +1,5 @@
-import 'package:appwise_ecom/models/orders_list_model.dart';
+import 'package:appwise_ecom/extensions/extension.dart';
+import 'package:appwise_ecom/models/orders/orders_list_model.dart';
 import 'package:appwise_ecom/utils/strings_methods.dart';
 import 'package:flutter/material.dart';
 
@@ -33,13 +34,25 @@ Widget myOrderCard(BuildContext context, OrdersListItemModel orderItem) {
               ],
             ),
             appSpaces.spaceForHeight15,
-            showItemInRow(title: "Tracking number: ", subtitle: safeString(orderItem.trackingNumber)),
+            showItemInRow(
+              title: "Tracking number: ",
+              subtitle: safeString(orderItem.trackingNumber),
+              context: context,
+            ),
             appSpaces.spaceForHeight5,
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                showItemInRow(title: "Quantity: ", subtitle: safeString(orderItem.quantity.toString())),
-                showItemInRow(title: "Total Amount: ", subtitle: showPrice(orderItem.totalAmount.toString())),
+                showItemInRow(
+                  title: "Quantity: ",
+                  context: context,
+                  subtitle: safeString(orderItem.quantity.toString()),
+                ),
+                showItemInRow(
+                  title: "Total Amount: ",
+                  context: context,
+                  subtitle: showPrice(orderItem.totalAmount.toString()),
+                ),
               ],
             ),
             appSpaces.spaceForHeight15,
@@ -51,11 +64,18 @@ Widget myOrderCard(BuildContext context, OrdersListItemModel orderItem) {
                   useInCard: true,
                   isActive: false,
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const MyOrderDetailScreen()));
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MyOrderDetailScreen(
+                          orderId: orderItem.orderNumber.toString(),
+                        ),
+                      ),
+                    );
                   },
                 ),
                 AppText(
-                  text: safeString(orderItem.status),
+                  text: safeString(orderItem.status).capitalizeFirstLetter(),
                   textColor: Colors.green,
                   fontsize: 14,
                 )
@@ -69,24 +89,29 @@ Widget myOrderCard(BuildContext context, OrdersListItemModel orderItem) {
 }
 
 Widget showItemInRow({
+  required BuildContext context,
   required String title,
   required String subtitle,
   MainAxisAlignment mainAxisAlignment = MainAxisAlignment.start,
 }) {
   return Row(
-    // mainAxisAlignment: mainAxisAlignment,
+    mainAxisSize: MainAxisSize.min,
+    crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       AppText(
-        text: title,
+        text: title.capitalizeFirstLetter(),
         fontsize: 14,
         textColor: const Color(0xff9B9B9B),
       ),
       appSpaces.spaceForWidth20,
-      AppText(
-        overflow: TextOverflow.ellipsis,
-        text: subtitle,
-        fontsize: 14,
-        maxLines: 1,
+      Flexible(
+        child: AppText(
+          overflow: TextOverflow.ellipsis,
+          softwrap: true,
+          text: subtitle.capitalizeFirstLetter(),
+          fontsize: 14,
+          maxLines: 3,
+        ),
       ),
     ],
   );

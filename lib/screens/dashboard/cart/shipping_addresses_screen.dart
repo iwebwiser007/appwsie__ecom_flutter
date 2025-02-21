@@ -1,18 +1,25 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:appwise_ecom/customs/custom_appbar.dart';
 import 'package:appwise_ecom/extensions/extension.dart';
 import 'package:appwise_ecom/models/address_list_item_model.dart';
 import 'package:appwise_ecom/riverpod/user_data_riverpod.dart';
 import 'package:appwise_ecom/screens/dashboard/cart/add_address_screen.dart';
 import 'package:appwise_ecom/widgets/address_tile_widget.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../constants/app_constant.dart';
 import '../../../services/base_url.dart';
 import '../../../services/request.dart';
 
 class AddressListScreen extends ConsumerStatefulWidget {
-  const AddressListScreen({super.key});
+  final Function? getShippingCharges;
+
+  const AddressListScreen({
+    super.key,
+    this.getShippingCharges,
+  });
 
   @override
   ConsumerState<AddressListScreen> createState() => _AddressListScreenState();
@@ -64,6 +71,9 @@ class _AddressListScreenState extends ConsumerState<AddressListScreen> {
               return AddressTileWidget(
                 isEdit: true,
                 adress: e,
+                getShippingCharges: (id) {
+                  widget.getShippingCharges?.call(id);
+                },
               );
             }).toList(),
           ),

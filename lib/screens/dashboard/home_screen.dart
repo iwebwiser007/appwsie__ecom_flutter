@@ -4,6 +4,7 @@ import 'package:appwise_ecom/customs/custom_loader.dart';
 import 'package:appwise_ecom/extensions/extension.dart';
 import 'package:appwise_ecom/models/banners_model.dart';
 import 'package:appwise_ecom/models/home_screen_products_model.dart';
+import 'package:appwise_ecom/riverpod/user_data_riverpod.dart';
 import 'package:appwise_ecom/utils/app_spaces.dart';
 import 'package:appwise_ecom/utils/strings_methods.dart';
 import 'package:appwise_ecom/widgets/dashboard_listing_widget.dart';
@@ -38,9 +39,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void getDashboardData() async {
     try {
       setLoader(ref, true);
+      final userId = ref.read(userDataProvider)?.id;
 
       ApiResponse response = await RequestUtils().getRequest(
-        url: ServiceUrl.getHomeProducts,
+        url: "${ServiceUrl.getHomeProducts}?user_id=$userId",
       );
 
       if (response.statusCode == 200) {
@@ -56,7 +58,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         setState(() {});
         getBannersFunc();
       }
+      setLoader(ref, false);
     } catch (e) {
+      setLoader(ref, false);
+
       Utils.snackBar(e.toString(), context);
 
       AppConst.showConsoleLog(e);
@@ -165,7 +170,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           decoration: BoxDecoration(
                             image: DecorationImage(
                               image: imageProvider,
-                              fit: BoxFit.cover,
+                              fit: BoxFit.fill,
                               colorFilter: const ColorFilter.mode(
                                 Color.fromARGB(255, 215, 214, 214),
                                 BlendMode.darken,

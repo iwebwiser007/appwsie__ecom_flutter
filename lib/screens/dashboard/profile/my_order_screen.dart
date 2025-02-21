@@ -1,6 +1,6 @@
 import 'package:appwise_ecom/customs/custom_loader.dart';
 import 'package:appwise_ecom/extensions/extension.dart';
-import 'package:appwise_ecom/models/orders_list_model.dart';
+import 'package:appwise_ecom/models/orders/orders_list_model.dart';
 import 'package:appwise_ecom/widgets/no_data_found_widget.dart';
 import 'package:appwise_ecom/widgets/screen_title_widget.dart';
 import 'package:flutter/material.dart';
@@ -39,9 +39,13 @@ class _MyOrderScreenState extends ConsumerState<MyOrderScreen> {
       print(response.data);
 
       if (response.statusCode == 200) {
-        orderList = OrdersListItemModel.fromList(
-          List.from(response.data['data']['orders']),
-        );
+        if (response.data['data'].isNotEmpty) {
+          orderList = OrdersListItemModel.fromList(
+            List.from(response.data['data']['orders']),
+          );
+        } else {
+          orderList = [];
+        }
       }
       _isLoader = false;
       setState(() {});

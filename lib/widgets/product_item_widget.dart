@@ -9,6 +9,9 @@ import 'package:appwise_ecom/models/home_screen_products_model.dart';
 import 'package:appwise_ecom/screens/dashboard/products/product_details_screen.dart';
 import 'package:appwise_ecom/utils/colors.dart';
 import 'package:appwise_ecom/utils/text_utility.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../services/product_service.dart';
 
 class ProductItemWidget extends StatelessWidget {
   final bool isNew;
@@ -189,7 +192,7 @@ class ProductItemWidget extends StatelessWidget {
   }
 }
 
-class ProductItemWidgetForHome extends StatelessWidget {
+class ProductItemWidgetForHome extends ConsumerStatefulWidget {
   final bool isNew;
   final HomeScreenProduct? product;
   final bool isFavoriteScreen;
@@ -204,12 +207,51 @@ class ProductItemWidgetForHome extends StatelessWidget {
   });
 
   @override
+  ConsumerState<ProductItemWidgetForHome> createState() => _ProductItemWidgetForHomeState();
+}
+
+class _ProductItemWidgetForHomeState extends ConsumerState<ProductItemWidgetForHome> {
+  bool isWhislisted = false;
+  late ProductService productService;
+
+  @override
+  void initState() {
+    print(widget.product?.isWishlisted);
+    isWhislisted = widget.product?.isWishlisted ?? false;
+    productService = ProductService(ref: ref, context: context);
+
+    super.initState();
+  }
+
+  void _handleAddToWishlist() async {
+    bool added = await productService.addToWishlist(
+      widget.product!.id!.toString(),
+    );
+    if (added) {
+      setState(() {
+        isWhislisted = true;
+      });
+    }
+  }
+
+  void _handleRemoveFromWishlist() async {
+    bool removed = await productService.removeItemWishlist(
+      widget.product!.id!.toString(),
+    );
+    if (removed) {
+      setState(() {
+        isWhislisted = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         context.push(ProductDetailsScreen(
-          productId: product?.id.toString(),
-          productName: product?.productName,
+          productId: widget.product?.id.toString(),
+          productName: widget.product?.productName,
         ));
       },
       child: Container(
@@ -229,7 +271,7 @@ class ProductItemWidgetForHome extends StatelessWidget {
                     topRight: Radius.circular(16),
                   ),
                   child: CachedNetworkImage(
-                    imageUrl: safeString(product?.productImage),
+                    imageUrl: safeString(widget.product?.productImage),
                     // 'assets/images/product_img.png',
                     height: 184,
                     width: double.infinity,
@@ -240,7 +282,7 @@ class ProductItemWidgetForHome extends StatelessWidget {
                 Positioned(
                   top: 8,
                   left: 15,
-                  child: !isNew
+                  child: !widget.isNew
                       // ? Container(
                       //     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       //     decoration: BoxDecoration(
@@ -269,16 +311,16 @@ class ProductItemWidgetForHome extends StatelessWidget {
                           ),
                         ),
                 ),
-                if (trailing != null)
+                if (widget.trailing != null)
                   Positioned(
                     top: 8,
                     right: 8,
-                    child: trailing!,
+                    child: widget.trailing!,
                   ),
                 Positioned(
                   bottom: 8,
                   right: 8,
-                  child: isFavoriteScreen
+                  child: widget.isFavoriteScreen
                       ? Container(
                           height: 36,
                           width: 36,
@@ -302,13 +344,42 @@ class ProductItemWidgetForHome extends StatelessWidget {
                             ),
                           ),
                         )
-                      : const CircleAvatar(
-                          backgroundColor: Colors.white,
-                          radius: 16,
-                          child: Icon(
-                            Icons.favorite_border,
-                            color: Colors.black,
-                            size: 16,
+                      // : const CircleAvatar(
+                      //     backgroundColor: Colors.white,
+                      //     radius: 16,
+                      //     child: Icon(
+                      //       Icons.favorite_border,
+                      //       color: Colors.black,
+                      //       size: 16,
+                      //     ),
+                      //   ),
+                      : Container(
+                          height: 36,
+                          width: 36,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey,
+                                blurRadius: 4,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: IconButton(
+                            onPressed: () {
+                              if (isWhislisted) {
+                                _handleRemoveFromWishlist();
+                              } else {
+                                _handleAddToWishlist();
+                              }
+                            },
+                            icon: Icon(
+                              isWhislisted ? Icons.favorite : Icons.favorite_outline,
+                              color: isWhislisted ? Colors.red : Colors.black,
+                              size: 20,
+                            ),
                           ),
                         ),
                 ),
@@ -319,32 +390,33 @@ class ProductItemWidgetForHome extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      ...List.generate(5, (index) {
-                        return Icon(
-                          index < 4 ? Icons.star : Icons.star_outline,
-                          color: index < 4 ? AppColor.startYellow : Colors.grey,
-                          size: 16,
-                        );
-                      }),
-                      const SizedBox(width: 4),
-                      const AppText(
-                        text: '(10)',
-                        fontsize: 12,
-                        textColor: Colors.grey,
-                      ),
-                    ],
-                  ),
+                  if (widget.product?.averageRating != null)
+                    Row(
+                      children: [
+                        ...List.generate(5, (index) {
+                          return Icon(
+                            index < widget.product!.averageRating! ? Icons.star : Icons.star_outline,
+                            color: index < widget.product!.averageRating! ? AppColor.startYellow : Colors.grey,
+                            size: 16,
+                          );
+                        }),
+                        const SizedBox(width: 4),
+                        const AppText(
+                          text: '(10)',
+                          fontsize: 12,
+                          textColor: Colors.grey,
+                        ),
+                      ],
+                    ),
                   const SizedBox(height: 8),
                   AppText(
-                    text: safeString(product?.description),
+                    text: safeString(widget.product?.description),
                     fontsize: 12,
                     textColor: Colors.grey,
                   ),
                   const SizedBox(height: 8),
                   AppText(
-                    text: safeString(product?.productName),
+                    text: safeString(widget.product?.productName),
                     fontsize: 16,
                     fontWeight: FontWeight.bold,
                     textColor: Colors.black,
@@ -360,7 +432,7 @@ class ProductItemWidgetForHome extends StatelessWidget {
                       // ),
                       // const SizedBox(width: 8),
                       AppText(
-                        text: showPrice(product?.productPrice.toString()),
+                        text: showPrice(widget.product?.productPrice.toString()),
                         fontsize: 14,
                         fontWeight: FontWeight.bold,
                         textColor: AppColor.primary,

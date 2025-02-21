@@ -62,7 +62,7 @@ class WishlistListItem extends StatelessWidget {
                       child: CachedNetworkImage(
                         imageUrl: safeString(product?.productDetails?.imageUrl),
                         errorWidget: (context, url, error) => const Icon(Icons.error_outline),
-                        fit: BoxFit.cover,
+                        fit: BoxFit.contain,
                         width: 130,
                         height: 120,
                       ),
@@ -86,23 +86,24 @@ class WishlistListItem extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            ...List.generate(5, (index) {
-                              return Icon(
-                                index < 4 ? Icons.star : Icons.star_outline,
-                                color: index < 4 ? AppColor.startYellow : Colors.grey,
-                                size: 16,
-                              );
-                            }),
-                            const SizedBox(width: 4),
-                            const AppText(
-                              text: '(10)',
-                              fontsize: 10,
-                              textColor: Colors.grey,
-                            ),
-                          ],
-                        ),
+                        if (product!.productDetails != null && product!.productDetails!.averageRating != null)
+                          Row(
+                            children: [
+                              ...List.generate(5, (index) {
+                                return Icon(
+                                  index < product!.productDetails!.averageRating! ? Icons.star : Icons.star_outline,
+                                  color: index < product!.productDetails!.averageRating! ? AppColor.startYellow : Colors.grey,
+                                  size: 16,
+                                );
+                              }),
+                              const SizedBox(width: 4),
+                              const AppText(
+                                text: '(10)',
+                                fontsize: 10,
+                                textColor: Colors.grey,
+                              ),
+                            ],
+                          ),
                         const SizedBox(height: 8),
                         AppText(
                           text: showPrice(product?.productDetails?.productPrice.toString()),
@@ -125,29 +126,30 @@ class WishlistListItem extends StatelessWidget {
             right: 15,
             bottom: 05,
             child: isFavoriteScreen
-                ? Container(
-                    height: 36,
-                    width: 36,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppColor.primary,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey,
-                          blurRadius: 4,
-                          offset: Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: const Icon(
-                        Icons.shopping_bag,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                    ),
-                  )
+                // ? Container(
+                //     height: 36,
+                //     width: 36,
+                //     decoration: const BoxDecoration(
+                //       shape: BoxShape.circle,
+                //       color: AppColor.primary,
+                //       boxShadow: [
+                //         BoxShadow(
+                //           color: Colors.grey,
+                //           blurRadius: 4,
+                //           offset: Offset(0, 2),
+                //         ),
+                //       ],
+                //     ),
+                //     child: IconButton(
+                //       onPressed: () {},
+                //       icon: const Icon(
+                //         Icons.shopping_bag,
+                //         color: Colors.white,
+                //         size: 20,
+                //       ),
+                //     ),
+                //   )
+                ? const SizedBox()
                 : Container(
                     height: 36,
                     width: 36,

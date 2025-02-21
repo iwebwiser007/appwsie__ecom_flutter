@@ -35,8 +35,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       );
 
       if (response.statusCode == 200) {
-        final UserDataModel userData = UserDataModel.fromJson(response.data['data']);
+        final UserDataModel userData = UserDataModel.fromJson(response.data['data']['user']);
         print(response.data['data']);
+
         ref.read(userDataProvider.notifier).setUserData(userData);
       }
 

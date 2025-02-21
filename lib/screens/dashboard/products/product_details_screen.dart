@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../constants/app_constant.dart';
+import '../../../models/product_item_model.dart';
 import '../../../riverpod/user_data_riverpod.dart';
 import '../../../services/base_url.dart';
 import '../../../services/product_service.dart';
@@ -20,6 +21,7 @@ import '../../../services/request.dart';
 import '../../../utils/colors.dart';
 import '../../../utils/common_utils.dart';
 import '../../../utils/text_utility.dart';
+import '../../../widgets/product_item_widget.dart';
 
 class ProductDetailsScreen extends ConsumerStatefulWidget {
   final String? productId;
@@ -37,12 +39,15 @@ class ProductDetailsScreen extends ConsumerStatefulWidget {
 
 class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
   // final List<String> sizes = ['XS', 'S', 'M', 'L', 'XL'];
-  final List<String> colors = ['Black', 'White', 'Red', 'Blue'];
+  // final List<String> colors = ['Black', 'White', 'Red', 'Blue'];
   String? selectedProductSize;
   bool isWhislisted = false;
   bool isAddedtoCart = false;
   late ProductService productService;
   ProductDetailsModel? productDetails;
+  String? selectedColor;
+  String? selectedImage;
+  List<ProductItemModel> relatedProductsList = [];
 
   @override
   void initState() {
@@ -51,6 +56,32 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
       getProductDetails(widget.productId.toString());
     });
     super.initState();
+  }
+
+  void getRelatedProductsByCategory() async {
+    try {
+      final userId = ref.read(userDataProvider)?.id;
+      // _isLoader = true;
+      setState(() {});
+      ApiResponse response = await RequestUtils().getRequest(
+        url: "${ServiceUrl.getProductsByCategoryIdUrl}?category_id=${productDetails?.categoryId}&user_id=$userId}",
+      );
+
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        final responsData = ProductItemModel.fromList(List.from(response.data['data']));
+
+        relatedProductsList = responsData;
+        relatedProductsList.removeWhere((item) => item.id.toString() == widget.productId);
+      }
+
+      setState(() {});
+    } catch (e) {
+      setState(() {});
+
+      Utils.snackBar(e.toString(), context);
+
+      AppConst.showConsoleLog(e);
+    }
   }
 
   void addToCart() async {
@@ -76,30 +107,6 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
     }
   }
 
-  // void addToWishlist() async {
-  //   try {
-  //     final userId = ref.read(userDataProvider)?.id;
-
-  //     ApiResponse response = await RequestUtils().postRequest(
-  //       url: ServiceUrl.addItemToWishlist,
-  //       body: {
-  //         "user_id": userId,
-  //         "product_id": widget.productId.toString(),
-  //       },
-  //     );
-
-  //     if (response.statusCode == 200 || response.statusCode == 201) {
-  //       isWhislisted = true;
-  //       setState(() {});
-  //     }
-  //     Utils.snackBar(response.message!, context);
-
-  //     print(response);
-  //   } catch (e) {
-  //     AppConst.showConsoleLog(e);
-  //   }
-  // }
-
   void getProductDetails(String id) async {
     try {
       final userId = ref.read(userDataProvider)?.id.toString();
@@ -113,6 +120,9 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
         productDetails = ProductDetailsModel.fromJson(response.data['data']);
         isWhislisted = productDetails!.isWishlisted!;
         isAddedtoCart = productDetails!.alreadyinCart!;
+        selectedColor = productDetails!.colors!.isNotEmpty ? productDetails?.colors!.first.color : '';
+        selectedImage = productDetails?.productImage;
+        getRelatedProductsByCategory();
       }
 
       setState(() {});
@@ -126,33 +136,6 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
     }
   }
 
-  // void removeItemWishlist(String id) async {
-  //   try {
-  //     final userId = ref.read(userDataProvider)?.id;
-
-  //     ApiResponse response = await RequestUtils().postRequest(
-  //       url: ServiceUrl.removeItemWishlist,
-  //       body: {
-  //         "user_id": userId,
-  //         "product_id": id.toString(),
-  //       },
-  //       method: 'DELETE',
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       isWhislisted = false;
-  //       // userWishlistItems.removeAt(index);
-  //       setState(() {});
-  //       Utils.snackBar(response.message!, context);
-  //     }
-
-  //     print(response);
-  //   } catch (e) {
-  //     AppConst.showConsoleLog(e);
-  //   }
-  // }
-
-  /// Handle add to wishlist
   void _handleAddToWishlist() async {
     bool added = await productService.addToWishlist(widget.productId!);
     if (added) {
@@ -162,7 +145,6 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
     }
   }
 
-  /// Handle remove from wishlist
   void _handleRemoveFromWishlist() async {
     bool removed = await productService.removeItemWishlist(widget.productId!);
     if (removed) {
@@ -174,7 +156,6 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    String selectedColor = colors[0];
     final loader = ref.watch(isLoadingProvider);
 
     return Scaffold(
@@ -194,7 +175,7 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                   itemBuilder: (context, index) {
                     return CachedNetworkImage(
                       // ImageConstant.add3,
-                      imageUrl: safeString(productDetails?.productImage),
+                      imageUrl: safeString(selectedImage),
                       fit: BoxFit.cover,
                     );
                   },
@@ -237,31 +218,37 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                         //   ),
                         // ),
                         // appSpaces.spaceForWidth10,
-                        Container(
-                          width: 130,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Colors.grey,
+                        if (productDetails!.colors!.isNotEmpty)
+                          Container(
+                            // width: 130,
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.grey,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: DropdownButton<String>(
-                            dropdownColor: Colors.white,
-                            value: selectedColor,
-                            items: colors.map(
-                              (String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
+                            child: DropdownButton<String>(
+                              dropdownColor: Colors.white,
+                              value: selectedColor,
+                              items: productDetails!.colors!.map(
+                                (ProductColor value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value.color,
+                                    child: Text(safeString(value.color).capitalizeFirstLetter()),
+                                  );
+                                },
+                              ).toList(),
+                              onChanged: (String? newValue) {
+                                selectedColor = newValue!;
+                                // selectedImage = productDetails!.colors!.firstWhere((product) => product.color == selectedColor).image;
+                                final id = productDetails!.colors!.firstWhere((product) => product.color == selectedColor).productId.toString();
+                                getProductDetails(id);
+                                setState(() {});
                               },
-                            ).toList(),
-                            onChanged: (String? newValue) {
-                              selectedColor = newValue!;
-                            },
+                            ),
                           ),
-                        ),
                         const Spacer(),
                         Container(
                           height: 36,
@@ -302,7 +289,7 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             AppText(
-                              text: safeString(productDetails?.productName),
+                              text: safeString(productDetails?.productName).capitalizeFirstLetter(),
                               fontWeight: FontWeight.w800,
                               fontsize: 24,
                             ),
@@ -316,40 +303,42 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                         ),
                         const SizedBox(height: 8),
                         AppText(
-                          text: safeString(productDetails?.description),
+                          text: safeString(productDetails?.description).capitalizeFirstLetter(),
                           fontsize: 11,
                           textColor: Colors.grey,
                         ),
                         const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            ...List.generate(5, (index) {
-                              return Icon(
-                                index < 4 ? Icons.star : Icons.star_outline,
-                                color: index < 4 ? AppColor.startYellow : Colors.grey,
-                                size: 16,
-                              );
-                            }),
-                            const SizedBox(width: 4),
-                            const AppText(
-                              text: '(10)',
-                              fontsize: 10,
-                              textColor: Colors.grey,
-                            ),
-                          ],
-                        ),
+                        if (productDetails?.averageRating != null)
+                          Row(
+                            children: [
+                              ...List.generate(5, (index) {
+                                return Icon(
+                                  index < productDetails!.averageRating! ? Icons.star : Icons.star_outline,
+                                  color: index < productDetails!.averageRating! ? AppColor.startYellow : Colors.grey,
+                                  size: 16,
+                                );
+                              }),
+                              const SizedBox(width: 4),
+                              const AppText(
+                                text: '(10)',
+                                fontsize: 10,
+                                textColor: Colors.grey,
+                              ),
+                            ],
+                          ),
                       ],
                     ),
                     appSpaces.spaceForHeight10,
                     AppText(
-                      text: safeString(productDetails?.metaDescription),
+                      text: safeString(productDetails?.metaDescription).capitalizeFirstLetter(),
                       fontsize: 14,
                       height: 1.3,
                       fontWeight: FontWeight.w200,
                     ),
                     appSpaces.spaceForHeight20,
 
-                    if (productDetails!.alreadyinCart != null && productDetails!.alreadyinCart!)
+                    // if (productDetails!.alreadyinCart != null && !productDetails!.alreadyinCart!)
+                    if (!isAddedtoCart)
                       CustomButton(
                         text: 'ADD TO CART',
                         onPressed: () {
@@ -445,7 +434,12 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                     // ),
                     ListTile(
                       onTap: () {
-                        context.push(const RatingReviewScreen());
+                        context.push(
+                          RatingReviewScreen(
+                            productData: productDetails!,
+                            ratings: productDetails!.ratings!,
+                          ),
+                        );
                       },
                       contentPadding: EdgeInsets.zero,
                       dense: true,
@@ -459,15 +453,28 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                       ),
                     ),
                     appSpaces.spaceForHeight20,
-                    // const AppText(
-                    //   text: 'You can also like this',
-                    //   fontWeight: FontWeight.w600,
-                    // ),
-                    // const ProductListWidget(
-                    //   headerTitle: '',
-                    //   headerSubtitle: '',
-                    //   showHeader: false,
-                    // ),
+                    if (relatedProductsList.isNotEmpty) ...[
+                      const AppText(
+                        text: 'You can also like this',
+                        fontsize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      appSpaces.spaceForHeight20,
+                      SizedBox(
+                        height: 350,
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          itemCount: relatedProductsList.length,
+                          itemBuilder: (context, index) {
+                            return ProductItemWidget(
+                              isNew: false,
+                              product: relatedProductsList[index],
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),

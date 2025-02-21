@@ -43,54 +43,61 @@ class ProductItemModel {
   String? createdAt;
   String? updatedAt;
   Brand? brand;
+  bool? isWishlisted;
+  int? averageRating;
+  bool? alreadyinCart;
   List<Attributes>? attributes;
 
-  ProductItemModel(
-      {this.id,
-      this.sectionId,
-      this.categoryId,
-      this.brandId,
-      this.vendorId,
-      this.adminId,
-      this.adminType,
-      this.productName,
-      this.productCode,
-      this.productColor,
-      this.productPrice,
-      this.productDiscount,
-      this.productWeight,
-      this.productLength,
-      this.productWidth,
-      this.productHeight,
-      this.productImage,
-      this.productVideo,
-      this.groupCode,
-      this.description,
-      this.test,
-      this.filtercolumn,
-      this.mini,
-      this.testfiltername,
-      this.length,
-      this.cableLenght,
-      this.jkdscbj,
-      this.tShirt,
-      this.name,
-      this.operatingSystem,
-      this.screenSize,
-      this.occasion,
-      this.fit,
-      this.pattern,
-      this.sleeve,
-      this.ram,
-      this.fabric,
-      this.metaTitle,
-      this.metaDescription,
-      this.isFeatured,
-      this.isBestseller,
-      this.createdAt,
-      this.updatedAt,
-      this.brand,
-      this.attributes});
+  ProductItemModel({
+    this.id,
+    this.sectionId,
+    this.categoryId,
+    this.brandId,
+    this.vendorId,
+    this.adminId,
+    this.adminType,
+    this.productName,
+    this.productCode,
+    this.productColor,
+    this.productPrice,
+    this.productDiscount,
+    this.productWeight,
+    this.productLength,
+    this.productWidth,
+    this.productHeight,
+    this.productImage,
+    this.productVideo,
+    this.groupCode,
+    this.description,
+    this.test,
+    this.filtercolumn,
+    this.mini,
+    this.testfiltername,
+    this.length,
+    this.cableLenght,
+    this.jkdscbj,
+    this.tShirt,
+    this.name,
+    this.operatingSystem,
+    this.screenSize,
+    this.occasion,
+    this.fit,
+    this.pattern,
+    this.sleeve,
+    this.ram,
+    this.fabric,
+    this.metaTitle,
+    this.metaDescription,
+    this.isFeatured,
+    this.isBestseller,
+    this.createdAt,
+    this.updatedAt,
+    this.brand,
+    this.isWishlisted,
+    this.alreadyinCart,
+    this.averageRating,
+    this.attributes,
+  });
 
   ProductItemModel.fromJson(Map<String, dynamic> json) {
     if (json["id"] is int) {
@@ -152,6 +159,15 @@ class ProductItemModel {
     }
     if (json["description"] is String) {
       description = json["description"];
+    }
+    if (json["averageRating"] is int) {
+      averageRating = json["averageRating"];
+    }
+    if (json["isWishlisted"] is bool) {
+      isWishlisted = json["isWishlisted"];
+    }
+    if (json["alreadyinCart"] is bool) {
+      alreadyinCart = json["alreadyinCart"];
     }
     test = json["test"];
     filtercolumn = json["filtercolumn"];
@@ -245,6 +261,9 @@ class ProductItemModel {
     _data["is_bestseller"] = isBestseller;
     _data["created_at"] = createdAt;
     _data["updated_at"] = updatedAt;
+    _data["alreadyinCart"] = alreadyinCart;
+    _data["isWishlisted"] = isWishlisted;
+    _data["averageRating"] = averageRating;
     if (brand != null) {
       _data["brand"] = brand?.toJson();
     }

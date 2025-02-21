@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:appwise_ecom/constants/app_constant.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class CatergoriesListTileWidget extends StatelessWidget {
@@ -42,10 +43,10 @@ class CatergoriesListTileWidget extends StatelessWidget {
                 topRight: Radius.circular(10),
                 bottomRight: Radius.circular(10),
               ),
-              child: Image.network(
+              child: CachedNetworkImage(
                 // 'assets/images/categories.png',
-                image ?? AppConst.noImg,
-                fit: BoxFit.cover,
+                imageUrl: image ?? AppConst.noImg,
+                fit: BoxFit.contain,
               ),
             ),
           ),

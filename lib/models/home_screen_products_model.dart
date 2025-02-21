@@ -76,7 +76,7 @@ class HomeScreenProduct {
   String? productColor;
   int? productPrice;
   int? productDiscount;
-  int? productWeight;
+  dynamic productWeight;
   int? productLength;
   int? productWidth;
   int? productHeight;
@@ -108,52 +108,59 @@ class HomeScreenProduct {
   String? createdAt;
   String? updatedAt;
   String? deletedAt;
+  bool? isWishlisted;
+  int? averageRating;
+  bool? alreadyinCart;
 
-  HomeScreenProduct(
-      {this.id,
-      this.sectionId,
-      this.categoryId,
-      this.brandId,
-      this.vendorId,
-      this.adminId,
-      this.adminType,
-      this.productName,
-      this.productCode,
-      this.productColor,
-      this.productPrice,
-      this.productDiscount,
-      this.productWeight,
-      this.productLength,
-      this.productWidth,
-      this.productHeight,
-      this.productImage,
-      this.productVideo,
-      this.groupCode,
-      this.description,
-      this.test,
-      this.filtercolumn,
-      this.mini,
-      this.testfiltername,
-      this.length,
-      this.cableLenght,
-      this.jkdscbj,
-      this.tShirt,
-      this.name,
-      this.operatingSystem,
-      this.screenSize,
-      this.occasion,
-      this.fit,
-      this.pattern,
-      this.sleeve,
-      this.ram,
-      this.fabric,
-      this.metaTitle,
-      this.metaDescription,
-      this.isFeatured,
-      this.isBestseller,
-      this.createdAt,
-      this.updatedAt,
-      this.deletedAt});
+  HomeScreenProduct({
+    this.id,
+    this.sectionId,
+    this.categoryId,
+    this.brandId,
+    this.vendorId,
+    this.adminId,
+    this.adminType,
+    this.productName,
+    this.productCode,
+    this.productColor,
+    this.productPrice,
+    this.productDiscount,
+    this.productWeight,
+    this.productLength,
+    this.productWidth,
+    this.productHeight,
+    this.productImage,
+    this.productVideo,
+    this.groupCode,
+    this.description,
+    this.test,
+    this.filtercolumn,
+    this.mini,
+    this.testfiltername,
+    this.length,
+    this.cableLenght,
+    this.jkdscbj,
+    this.tShirt,
+    this.name,
+    this.operatingSystem,
+    this.screenSize,
+    this.occasion,
+    this.fit,
+    this.pattern,
+    this.sleeve,
+    this.ram,
+    this.fabric,
+    this.metaTitle,
+    this.metaDescription,
+    this.isFeatured,
+    this.isBestseller,
+    this.createdAt,
+    this.updatedAt,
+    this.deletedAt,
+    this.isWishlisted,
+    this.alreadyinCart,
+    this.averageRating,
+  });
 
   HomeScreenProduct.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -200,6 +207,15 @@ class HomeScreenProduct {
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     deletedAt = json['deleted_at'];
+    if (json["averageRating"] is int) {
+      averageRating = json["averageRating"];
+    }
+    if (json["isWishlisted"] is bool) {
+      isWishlisted = json["isWishlisted"];
+    }
+    if (json["alreadyinCart"] is bool) {
+      alreadyinCart = json["alreadyinCart"];
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -248,6 +264,9 @@ class HomeScreenProduct {
     data['created_at'] = createdAt;
     data['updated_at'] = updatedAt;
     data['deleted_at'] = deletedAt;
+    data["alreadyinCart"] = alreadyinCart;
+    data["isWishlisted"] = isWishlisted;
+    data["averageRating"] = averageRating;
     return data;
   }
 }

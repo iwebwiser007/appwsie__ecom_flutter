@@ -13,11 +13,13 @@ import '../utils/text_utility.dart';
 class AddressTileWidget extends ConsumerStatefulWidget {
   final AddressListItemModel? adress;
   final bool isEdit;
+  final Function? getShippingCharges;
 
   const AddressTileWidget({
     super.key,
     this.adress,
     this.isEdit = false,
+    this.getShippingCharges,
   });
 
   @override
@@ -27,6 +29,7 @@ class AddressTileWidget extends ConsumerStatefulWidget {
 class _AddressTileWidgetState extends ConsumerState<AddressTileWidget> {
   toggleRememberMe() {
     print(widget.adress?.id);
+    widget.getShippingCharges?.call(widget.adress?.id.toString());
     setState(() {
       ref.read(shippingAddressProvider.notifier).update(widget.adress!);
     });
@@ -81,7 +84,13 @@ class _AddressTileWidgetState extends ConsumerState<AddressTileWidget> {
                     //     AddAddressScreen(() {}),
                     //   );
                     // } else {
-                    context.push(const AddressListScreen());
+                    context.push(
+                      AddressListScreen(
+                        getShippingCharges: (id) {
+                          widget.getShippingCharges?.call(id);
+                        },
+                      ),
+                    );
                     // }
                   },
                   child: const AppText(
